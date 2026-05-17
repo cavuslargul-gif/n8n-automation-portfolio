@@ -11,7 +11,7 @@ Form submission → Google Sheets (logging) → Gmail (confirmation)
 - Google Sheets connected via OAuth2
 - Gmail connected via OAuth2
 - Nodes connected in sequence on the n8n canvas
-- Tested end-to-end with live form submission<img width="904" height="936" alt="image" src="https://github.com/user-attachments/assets/265a3790-3dcd-41e0-a2b6-b6d70dc7de1b" />
+- Tested end-to-end with live form submission
 
 ## How it works
 1. User fills out the n8n form (project name, applicant, priority)
