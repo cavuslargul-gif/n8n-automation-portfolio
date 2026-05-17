@@ -17,4 +17,4 @@ a problem I've encountered in practice.
 | # | Domain | Use Case | Tools |
 |---|--------|----------|-------|
 | 01 | Public Administration | Project request intake | n8n Form, Google Sheets, Gmail |
-| 02 | coming soon | ... | ... |
+| 02 | Public Administration | ESF Deadline Reminder | Schedule Trigger, Google Sheets, IF Node, Gmail |
