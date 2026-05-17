@@ -1,0 +1,174 @@
+{
+  "name": "03-jobcenter-appointment-routing",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Terminanmeldung Arbeitsvermittlung",
+        "formDescription": "Online-Anmeldung beim Jobcenter – Arbeitsvermittlung. Bitte füllen Sie alle Felder vollständig aus.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Vorname"
+            },
+            {
+              "fieldLabel": "Nachname"
+            },
+            {
+              "fieldLabel": "Geburtsdatum"
+            },
+            {
+              "fieldLabel": "Erwerbsfähig",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Ja"
+                  },
+                  {
+                    "option": "Nein"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c337520e-e874-4277-852d-35f7526b9008",
+      "name": "On form submission",
+      "webhookId": "a21536bc-76cc-460e-ad94-8696d313d0f5"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "69ee8d20-825b-4f84-b572-90c090f2673a",
+              "leftValue": "={{ $json.Geburtsdatum }}",
+              "rightValue": "={{ $now.minus(25, 'years').toFormat('yyyy-MM-dd') }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "440b864c-9f56-4ce6-9bc2-976b952d86c2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Terminbestätigung Arbeitsvermittlung",
+        "emailType": "text",
+        "message": "=Guten Tag {{ $json.Vorname }} {{ $json.Nachname }},  \n\nIhr Termin bei der Arbeitsvermittlung wurde erfasst.  \n\nSie werden in Kürze über Ihren zugewiesenen Termin informiert.  \n\nMit freundlichen Grüßen \n\nJobcenter",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        96
+      ],
+      "id": "8ba4afed-7d8a-4b88-a1c2-4a44cb5dcef3",
+      "name": "Message_Age: Client over 25",
+      "webhookId": "01888603-8598-4936-9f41-b6ce9a4dc514",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Terminbestätigung Arbeitsvermittlung",
+        "emailType": "text",
+        "message": "=Guten Tag {{ $json.Vorname }} {{ $json.Nachname }},  \n\nIhr Termin bei der Arbeitsvermittlung wurde erfasst.  \n\nSie werden in Kürze über Ihren zugewiesenen Termin informiert.  \n\nMit freundlichen Grüßen \nJobcenter",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "733b0eea-4245-484a-92f5-c589bbd37fec",
+      "name": "Message_Age: Client U 25",
+      "webhookId": "bbc37552-c67a-407f-9f83-4ea46dc1e19b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message_Age: Client U 25",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Message_Age: Client over 25",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2a69e8a2-61a7-4a63-a65f-abcab557ef32",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "id": "JFeXLOQeI5xUPCQ4",
+  "tags": []
+}
