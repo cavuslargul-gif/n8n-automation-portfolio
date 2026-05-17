@@ -18,3 +18,13 @@ a problem I've encountered in practice.
 |---|--------|----------|-------|
 | 01 | Public Administration | Project request intake | n8n Form, Google Sheets, Gmail |
 | 02 | Public Administration | ESF Deadline Reminder | Schedule Trigger, Google Sheets, IF Node, Gmail |
+| 03 | Jobcenter | coming soon | — |
+| 04 | Jobcenter | coming soon | — |
+| 05 | Special Education | coming soon | — |
+| 06 | Special Education | coming soon | — |
+| 07 | AI & Education | coming soon | — |
+| 08 | AI & Education | coming soon | — |
+| 09 | Retail | coming soon | — |
+| 10 | Retail | coming soon | — |
+| 11 | Hospitality | coming soon | — |
+| 12 | Hospitality | coming soon | — |
