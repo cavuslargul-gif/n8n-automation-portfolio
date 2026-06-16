@@ -1,5 +1,5 @@
 # n8n-Automation-Portfolio
-n8n workflow automations across 6 domains — public administration, education, retail, hospitality &amp; AI
+n8n workflow automations across 6 domains — public administration, education, retail, hospitality management and AI
 
 ## About me
 I'm a career changer with a background spanning public administration, 
