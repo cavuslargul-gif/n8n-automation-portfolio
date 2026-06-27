@@ -1,0 +1,348 @@
+{
+  "name": "05-education-ai-learning-request-routing",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Deine Lernanfrage: Empfehlungen für Anfänger",
+        "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  als Anfänger empfehlen wir dir: - n8n Grundkurs (Level 1) - YouTube: \"Git für Anfänger\" - Buch: \"Lernen lernen\"  Viel Erfolg!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        0
+      ],
+      "id": "613a0e0a-54a2-46dc-abf3-7f35341c17b9",
+      "name": "Nachricht an Anfänger",
+      "webhookId": "5b6fe00e-c872-4b98-828b-038ef85fdde8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Deine Lernanfrage: Empfehlungen für Fortgeschrittene",
+        "emailType": "text",
+        "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  für Fortgeschrittene empfehlen wir: - n8n Level 2 Kurs - GitHub: Eigene Projekte dokumentieren - Kurs: \"APIs verstehen und nutzen\"  Viel Erfolg!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        176
+      ],
+      "id": "e083ffe8-acc1-4422-82cb-f6c5cff36e01",
+      "name": "Nachricht an Fortgeschrittene",
+      "webhookId": "f7e35115-e6d7-4a2a-84d3-27d3893f787a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Deine Lernanfrage: Empfehlungen für Experten",
+        "emailType": "text",
+        "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  für Experten empfehlen wir: - Open Source Projekte beitragen - Eigene n8n-Nodes entwickeln - Konferenzen: PyCon, n8n Community  Viel Erfolg!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        752,
+        384
+      ],
+      "id": "0b946a42-3e76-4c44-87ca-b0050e959c50",
+      "name": "Nachricht an Experten",
+      "webhookId": "dedfb50c-615e-4f3e-ad9e-9b6e18b3dfa5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Lernanfrage",
+        "formDescription": "Optional — kannst du leer lassen oder kurz schreiben:\n\nStell deine Lernanfrage und erhalte passende Ressourcen.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Dein Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Was möchtest du lernen?",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Wie schätzt du dich ein?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Anfänger"
+                  },
+                  {
+                    "option": "Fortgeschritten"
+                  },
+                  {
+                    "option": "Experte"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2c37b82f-4a00-4055-98b7-391f93cc5445",
+      "name": "Lernanfrage",
+      "webhookId": "38a3a856-240c-477f-94c1-5f7b744d701b"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Du bist ein Lernberater. Analysiere die Lernanfrage und antworte NUR mit einem dieser drei Wörter: Anfänger, Fortgeschritten oder Experte."
+            },
+            {
+              "content": "=Thema: {{ $('Lernanfrage').item.json[\"Was möchtest du lernen?\"] }}\nSelbsteinschätzung: {{ $('Lernanfrage').item.json[\"Wie schätzt du dich ein?\"] }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "150c83ce-243d-4bb4-9ce3-64fc6945de26",
+      "name": "Nachricht",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "Gmail-Node mit dem Text z.B. \"Es gab einen Fehler bei der Verarbeitung deiner Anfrage."
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Fehlerbericht",
+        "emailType": "text",
+        "message": "Es gab einen Fehler bei der Verarbeitung deiner Anfrage.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        272
+      ],
+      "id": "1ceb5eac-d9af-45c2-8924-7a64e6c371cb",
+      "name": "Fehlerbericht",
+      "webhookId": "9f41493b-eeec-4b2c-b043-6c12f9af3dc8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output[0].content[0].text }}",
+                    "rightValue": "Anfänger",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "578a9305-e5dc-40b4-aad6-33fafa6d1d71"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Anfänger"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5d049b08-755c-409e-bb66-1bd448e54bb1",
+                    "leftValue": "={{ $json.output[0].content[0].text }}",
+                    "rightValue": "Fortgeschritten",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Fortgeschritten"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bade586a-fbe4-49fe-80cf-5b18e49d71b0",
+                    "leftValue": "={{ $json.output[0].content[0].text }}",
+                    "rightValue": "Experte",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Experte"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        16
+      ],
+      "id": "40b631db-9a77-438c-8a0f-34fc77a28c63",
+      "name": "Benutzerdefinierte Benachrichtigung"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Lernanfrage": {
+      "main": [
+        [
+          {
+            "node": "Nachricht",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nachricht": {
+      "main": [
+        [
+          {
+            "node": "Benutzerdefinierte Benachrichtigung",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fehlerbericht",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Benutzerdefinierte Benachrichtigung": {
+      "main": [
+        [
+          {
+            "node": "Nachricht an Anfänger",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nachricht an Fortgeschrittene",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nachricht an Experten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a0c4f754-c60c-4e78-a6eb-ae4522a42695",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "I1zJKMtzYAFohVbz",
+  "tags": []
+}
