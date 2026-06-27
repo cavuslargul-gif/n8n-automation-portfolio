@@ -21,9 +21,9 @@ a problem I've encountered in practice.
 | 03 | Jobcenter | Appointment Routing by Age | n8n Form, IF Node, Gmail |
 | 04 | Jobcenter | ALG II Application Intake | n8n Form, Google Sheets, Gmail |
 | 05 | AI & Education | AI Learning Request Routing | n8n Form, OpenAI, Switch Node, Gmail |
-| 06 | Special Education | coming soon | — |
-| 07 | AI & Education | coming soon | — |
-| 08 | AI & Education | coming soon | — |
+| 06 | AI & Education | coming soon | — |
+| 07 | AI & Education | AI Content Generator | n8n Form, OpenAI, Switch Node, Gmail |
+| 08 | Special Education | coming soon | — |
 | 09 | Retail | coming soon | — |
 | 10 | Retail | coming soon | — |
 | 11 | Hospitality | coming soon | — |
