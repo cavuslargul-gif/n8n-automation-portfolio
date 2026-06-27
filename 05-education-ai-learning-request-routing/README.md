@@ -1,4 +1,4 @@
-# 05 – Education: AI Learning Request Routing.md
+# 05 – Education: AI Learning Request Routing
 
 ## Use Case
 Automatically classifies incoming learning requests by skill level using AI and sends personalized resource recommendations via email — designed for educational providers, online courses, or internal training programs.
