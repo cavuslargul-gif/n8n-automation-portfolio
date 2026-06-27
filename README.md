@@ -20,7 +20,7 @@ a problem I've encountered in practice.
 | 02 | Public Administration | ESF Deadline Reminder | Schedule Trigger, Google Sheets, IF Node, Gmail |
 | 03 | Jobcenter | Appointment Routing by Age | n8n Form, IF Node, Gmail |
 | 04 | Jobcenter | ALG II Application Intake | n8n Form, Google Sheets, Gmail |
-| 05 | Special Education | coming soon | — |
+| 05 | AI & Education | AI Learning Request Routing | n8n Form, OpenAI, Switch Node, Gmail |
 | 06 | Special Education | coming soon | — |
 | 07 | AI & Education | coming soon | — |
 | 08 | AI & Education | coming soon | — |
