@@ -1,0 +1,365 @@
+{
+  "name": "07-ai-content-generator",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "Du bist ein erfahrener Social-Media-Texter. Erstelle ansprechenden Content auf Deutsch. Antworte NUR mit dem fertigen Text, ohne Erklärungen oder Kommentare."
+            },
+            {
+              "content": "=Erstelle einen {{ $json.Plattform }}-Post zum Thema \"{{ $json.Thema }}\" für die Zielgruppe \"{{ $json.Zielgruppe }}\". Ton: {{ $json.Ton }}. \n\nFormatierung je nach Plattform:\n- LinkedIn: 150-200 Wörter, professionell, mit 3-5 Hashtags\n- Instagram: 50-80 Wörter, emotional, mit 5-8 Hashtags und 2-3 Emojis\n- Newsletter: 200-250 Wörter, Betreffzeile + Fließtext, kein Hashtag"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cacd00af-4919-4d27-bf0f-53529b12da6d",
+      "name": "Contentmixer",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "Es gab einen Fehler bei der Verarbeitung deiner Anfrage."
+    },
+    {
+      "parameters": {
+        "formTitle": "Content Generator",
+        "formDescription": "Erstelle automatisch Social-Media-Posts und Newsletter-Texte mit KI.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Thema",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Zielgruppe",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Ton",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Professionell"
+                  },
+                  {
+                    "option": "Locker"
+                  },
+                  {
+                    "option": "Inspirierend"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Plattform",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "LinkedIn"
+                  },
+                  {
+                    "option": "Instagram"
+                  },
+                  {
+                    "option": "Newslettter"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "62e76213-8844-4b00-976b-c3887ba8d8d0",
+      "name": "Contentplaner1",
+      "webhookId": "ae658d01-d6c9-451c-88d2-542383cc6825"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Contentplaner1').item.json.Plattform }}",
+                    "rightValue": "LinkedIn",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "ab855b83-54c4-4369-b2f2-1e610e83d55f"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "LinkedIn"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b5a39a1e-b641-4122-a97e-bcf41d68caaf",
+                    "leftValue": "={{ $('Contentplaner1').item.json.Plattform }}",
+                    "rightValue": "Instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3ab56c31-0587-4554-af87-4d6abda94b85",
+                    "leftValue": "={{ $('Contentplaner1').item.json.Plattform }}",
+                    "rightValue": "Newsletter",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Newsletter"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        -16
+      ],
+      "id": "475d6091-b64e-4d7e-91d1-5c5c568ed063",
+      "name": "Content nach Zielgruppe"
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Dein LinkedIn-Post ist fertig",
+        "emailType": "text",
+        "message": "={{ $('Contentmixer').item.json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        -160
+      ],
+      "id": "815a3239-7cd9-4b83-a662-e654294085c1",
+      "name": "Content für LinkedIn",
+      "webhookId": "b943dc26-1b2c-43ab-b8af-6f7daae732a5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Dein Newsletter-Entwurf ist fertig",
+        "emailType": "text",
+        "message": "={{ $('Contentmixer').item.json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        192
+      ],
+      "id": "f34f2ca0-8bca-4d72-9745-0742adbce6d1",
+      "name": "Content für Newsletter",
+      "webhookId": "98d17690-d16f-4657-9ed8-f3b0b4a00202",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Dein Instagram-Post ist fertig ✨",
+        "emailType": "text",
+        "message": "={{ $json.output[0].content[0].text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        768,
+        0
+      ],
+      "id": "6b030eb2-b602-42d8-ac95-2ad49149d877",
+      "name": "Content für Instagram",
+      "webhookId": "2b0ea5d9-9ac1-47ac-a345-640fdd4c9c34",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Fehlerbericht",
+        "emailType": "text",
+        "message": "Es gab einen Fehler bei der Verarbeitung deiner Anfrage.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        240
+      ],
+      "id": "c723c323-e179-4b59-a487-3741f8f2db89",
+      "name": "Fehlerbericht",
+      "webhookId": "7fc24535-e516-4ab0-9c63-efc92e6d9e8d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Contentmixer": {
+      "main": [
+        [
+          {
+            "node": "Content nach Zielgruppe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fehlerbericht",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Contentplaner1": {
+      "main": [
+        [
+          {
+            "node": "Contentmixer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content nach Zielgruppe": {
+      "main": [
+        [
+          {
+            "node": "Content für LinkedIn",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content für Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Content für Newsletter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0a0dd912-fc69-4c7b-8349-914b34704b0e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "WnRzARt2wrGC1zWR",
+  "tags": []
+}
