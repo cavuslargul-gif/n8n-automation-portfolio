@@ -1,0 +1,175 @@
+{
+  "name": "06a-rag-document-ingestion",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Nodes\n\n### Form Trigger = Wissensmanagement — Dokument einpflegen (Knowledge Intake Form)\n### Embeddings OpenAI = Text zu Vektoren  (Generate Embeddings)\n### Default Data Loader = Dokument laden (Load Document)\n### Qdrant Vector Store = Wissen speichern (Store to Vector DB)",
+        "height": 288,
+        "width": 704,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "8ecd7e76-19f6-4f5b-a3d3-62f4da38877c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "Knowledge Base — Dokument einpflegen",
+        "formDescription": "Füge neues Wissen in die RAG-Wissensdatenbank ein",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Dokumententitel"
+            },
+            {
+              "fieldLabel": "Inhalt",
+              "fieldType": "textarea"
+            },
+            {
+              "fieldLabel": "Kategorie",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Prozess"
+                  },
+                  {
+                    "option": "Richtlinien"
+                  },
+                  {
+                    "option": "Produkt"
+                  },
+                  {
+                    "option": "Training"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5e0acd11-a053-4a60-8a1e-9be764edbf32",
+      "name": "Wissensmanagement — Dokument einpflegen (Knowledge Intake Form)",
+      "webhookId": "0b4e839b-1737-4b34-a7cf-45cb9b1b71de"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        176
+      ],
+      "id": "88bc425d-62ee-4a50-93bf-17f1804d4e26",
+      "name": "Text zu Vektoren (Generate Embeddings)",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        176
+      ],
+      "id": "29539666-aeb3-43c4-bd70-0ee429e8dba6",
+      "name": "Dokument laden (Load Document)"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "knowledge-base",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1b283324-01dc-4f6b-a460-b387d45aae47",
+      "name": "Wissen speichern (Store to Vector DB)",
+      "credentials": {
+        "qdrantApi": {
+          "id": "hvfBuVt3GVHZWmEu",
+          "name": "Qdrant account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wissensmanagement — Dokument einpflegen (Knowledge Intake Form)": {
+      "main": [
+        [
+          {
+            "node": "Wissen speichern (Store to Vector DB)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text zu Vektoren (Generate Embeddings)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Wissen speichern (Store to Vector DB)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dokument laden (Load Document)": {
+      "ai_document": [
+        [
+          {
+            "node": "Wissen speichern (Store to Vector DB)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c281605b-6ebb-45c7-b6f9-2bbf2f460a73",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "UNyLL4ltAlzZd18K",
+  "tags": []
+}
