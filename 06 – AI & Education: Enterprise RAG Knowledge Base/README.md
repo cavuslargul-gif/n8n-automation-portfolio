@@ -8,12 +8,16 @@ Makes internal knowledge instantly queryable in natural language — without exp
 ### 06a — Document Ingestion
 
 Knowledge Intake Form → Generate Embeddings + Load Document → Store to Vector DB (Qdrant EU)
+
+
 <img width="597" height="195" alt="image" src="https://github.com/user-attachments/assets/07cc88dd-f7a0-4a28-aab9-f3094d750e76" />
 
 
 ### 06b — Knowledge Chat
 
 Receive User Question → AI Agent → Search Knowledge Base (Qdrant) → Answer
+
+
 <img width="595" height="209" alt="image" src="https://github.com/user-attachments/assets/cd485fb6-dfe7-4687-b0f1-a800e287ff68" />
 
 
