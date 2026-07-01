@@ -63,6 +63,3 @@ Default Data Loader
 ## Background
 Built with data sovereignty as a first-class requirement. Qdrant was chosen over US-based alternatives (Pinecone, Weaviate) because all vectors remain on EU infrastructure — directly relevant for German public sector, healthcare, and enterprise clients subject to GDPR.
 
-##
-
-Part of the n8n Automation Portfolio by Gül Cavuslar — guel-cavuslar.netlify.app
