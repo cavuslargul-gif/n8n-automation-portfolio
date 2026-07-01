@@ -21,10 +21,10 @@ a problem I've encountered in practice.
 | 03 | Jobcenter | Appointment Routing by Age | n8n Form, IF Node, Gmail |
 | 04 | Jobcenter | ALG II Application Intake | n8n Form, Google Sheets, Gmail |
 | 05 | AI & Education | AI Learning Request Routing | n8n Form, OpenAI, Switch Node, Gmail |
-| 06 | AI & Education | Enterprise RAG Knowledge Base | n8n Form, OpenAI, Qdrant, Chat Trigger |
+| 06a | AI & Education | Enterprise RAG – Document Ingestion | n8n Form Trigger, Default Data Loader, OpenAI Embeddings, Qdrant |
+| 06b | AI & Education | Enterprise RAG – Knowledge Chat | n8n Chat Trigger, AI Agent, OpenAI GPT-5, Qdrant |
 | 07 | AI & Education | AI Content Generator | n8n Form, OpenAI, Switch Node, Gmail |
-| 08 | Special Education | coming soon | — |
+| 08 | Retail | coming soon | — |
 | 09 | Retail | coming soon | — |
-| 10 | Retail | coming soon | — |
+| 10 | Hospitality | coming soon | — |
 | 11 | Hospitality | coming soon | — |
-| 12 | Hospitality | coming soon | — |
