@@ -5,11 +5,11 @@
 Makes internal knowledge instantly queryable in natural language — without exposing data to US cloud providers.
 
 ## Workflow
-06a — Document Ingestion
+### 06a — Document Ingestion
 
 Knowledge Intake Form → Generate Embeddings + Load Document → Store to Vector DB (Qdrant EU)
 
-## 06b — Knowledge Chat
+### 06b — Knowledge Chat
 
 Receive User Question → AI Agent → Search Knowledge Base (Qdrant) → Answer
 
