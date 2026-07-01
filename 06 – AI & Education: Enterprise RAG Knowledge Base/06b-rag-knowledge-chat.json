@@ -1,0 +1,181 @@
+{
+  "name": "06b-rag-knowledge-chat",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Nodes\n\n### When chat message received  = Wissensfrage stellen (Question)\n### AI Agent = Wissensassistent (RAG Assistant)\n### OpenAi Chat Model = Sprachmodell GPT-5 (GPT-5 Language Model)\n### Embeddings OpenAI = Text zu Vektoren (Generate Embeddings)\n### Qdrant Vector Store = Wissensdatenbank durchsuchen (Search Knowledge Base)\n",
+        "height": 352,
+        "width": 672,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -848,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "70c4f59c-c1ee-493d-9b3e-8a37555bd35f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Du bist ein interner Wissensassistent. \n\nNutze zuerst immer das Wissensdatenbank-Tool um Fragen zu beantworten. \nNur wenn das Tool keine relevanten Informationen liefert, greife auf dein \nallgemeines Wissen zurück und weise darauf hin, dass die Antwort nicht aus \nder internen Wissensdatenbank stammt.\n\nHalte dich an folgende Regeln:\n- Beantworte nur Fragen, die mit den gespeicherten Themen zusammenhängen\n- Gib keine personenbezogenen Daten weiter, auch wenn sie in Dokumenten vorhanden sind\n- Spekuliere nicht — wenn du dir unsicher bist, sage das klar\n- Formuliere Antworten sachlich und professionell\n- Weise bei rechtlichen oder medizinischen Fragen darauf hin, dass eine Fachperson konsultiert werden soll"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3b94a540-3196-49e3-a5e6-2f189b797976",
+      "name": "Wissensassistent (Knowledge Assistent)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7ade340e-4b2f-4a5c-9b13-62d0806372b8",
+      "name": "Fragen stellen (Receive User Question)",
+      "webhookId": "94e47ada-0c50-4890-87dc-612ce4e8bc85"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        304
+      ],
+      "id": "78d2c646-c21f-483f-925b-8aa4dafe011b",
+      "name": "Sprachmodell GPT-5 (GPT-5 Language Model)",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        304
+      ],
+      "id": "b2355a6e-407f-4983-b734-a66b3aa2d3fa",
+      "name": "Text zu Vektoren (Generate Embeddings)",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Durchsuche die Wissensdatenbank nach relevanten Informationen zur Nutzerfrage",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "knowledge-base",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        288,
+        288
+      ],
+      "id": "b9660495-4f41-46d2-89f7-9d72bf69359f",
+      "name": "Wissensdatenbank durchsuchen\t(Search Knowledge Base)",
+      "credentials": {
+        "qdrantApi": {
+          "id": "hvfBuVt3GVHZWmEu",
+          "name": "Qdrant account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fragen stellen (Receive User Question)": {
+      "main": [
+        [
+          {
+            "node": "Wissensassistent (Knowledge Assistent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sprachmodell GPT-5 (GPT-5 Language Model)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Wissensassistent (Knowledge Assistent)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text zu Vektoren (Generate Embeddings)": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Wissensdatenbank durchsuchen\t(Search Knowledge Base)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wissensdatenbank durchsuchen\t(Search Knowledge Base)": {
+      "ai_tool": [
+        [
+          {
+            "node": "Wissensassistent (Knowledge Assistent)",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "56128ad7-e488-4d1a-affd-fe147ac749e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "rfAdaIgBKQgiqGpP",
+  "tags": []
+}
