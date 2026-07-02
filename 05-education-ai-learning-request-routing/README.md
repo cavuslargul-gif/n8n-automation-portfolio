@@ -2,8 +2,13 @@
 
 ## Use Case
 Automatically classifies incoming learning requests by skill level using AI and sends personalized resource recommendations via email — designed for educational providers, online courses, or internal training programs.
-Workflow
+
+## Workflow
 Form Trigger → OpenAI (AI classification) → Switch (3-way routing) → Gmail (personalized recommendations) + Gmail (error notification)
+
+
+<img width="1305" height="525" alt="image" src="https://github.com/user-attachments/assets/c22e3ae1-9816-4cbd-8d0d-84802e65c7c5" />
+
 
 ## How it was built
 - Form Trigger configured with three fields: name, learning topic, and self-assessment (Anfänger / Fortgeschritten / Experte)
