@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Deine Lernanfrage: Empfehlungen für Anfänger",
         "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  als Anfänger empfehlen wir dir: - n8n Grundkurs (Level 1) - YouTube: \"Git für Anfänger\" - Buch: \"Lernen lernen\"  Viel Erfolg!",
         "options": {}
@@ -26,7 +26,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Deine Lernanfrage: Empfehlungen für Fortgeschrittene",
         "emailType": "text",
         "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  für Fortgeschrittene empfehlen wir: - n8n Level 2 Kurs - GitHub: Eigene Projekte dokumentieren - Kurs: \"APIs verstehen und nutzen\"  Viel Erfolg!",
@@ -50,7 +50,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Deine Lernanfrage: Empfehlungen für Experten",
         "emailType": "text",
         "message": "=Hallo {{ $('Lernanfrage').item.json[\"Dein Name\"] }},  für Experten empfehlen wir: - Open Source Projekte beitragen - Eigene n8n-Nodes entwickeln - Konferenzen: PyCon, n8n Community  Viel Erfolg!",
@@ -159,7 +159,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Fehlerbericht",
         "emailType": "text",
         "message": "Es gab einen Fehler bei der Verarbeitung deiner Anfrage.",
