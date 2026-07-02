@@ -1,4 +1,4 @@
-# 01 – Public Administration: Project Request Intake
+# 01–Public Administration: Project Request Intake
 
 ## Use Case
 Automates incoming project requests in a public administration context.
