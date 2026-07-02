@@ -1,0 +1,215 @@
+{
+  "name": "01-Verwaltung-Projektantrag",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Nodes\n\n- ## Form Trigger = Projekantrag (Project Request Form)\n- ## Google Sheets (appendOrUpdate: sheet) = Erfassung Projektdaten (Project Records)\n- ## Gmail (send: message) = Antragsbestätigung via E-Mail (Confirmation Email)",
+        "height": 176,
+        "width": 784,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        -352
+      ],
+      "typeVersion": 1,
+      "id": "b7402ccc-2e41-4d42-bf25-4865f9c0a63b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "formTitle": "Projektantrag",
+        "formDescription": "Eingang neuer Projektanträge - Verwaltung",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Projektname"
+            },
+            {
+              "fieldLabel": "Antragsteller"
+            },
+            {
+              "fieldLabel": "Priorität",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Hoch"
+                  },
+                  {
+                    "option": "Mittel"
+                  },
+                  {
+                    "option": "Niedrig"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -432,
+        -144
+      ],
+      "id": "0d7c7ab9-8d0d-4a08-a11e-90660b08c296",
+      "name": "Projektantrag ( Project Request Form)",
+      "webhookId": "18cb6c62-f92c-49f7-9fea-2cd5ded95112"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0",
+          "mode": "list",
+          "cachedResultName": "Projektanträge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Projektanträge",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Projektname": "={{ $json.Projektname }}",
+            "Priorität": "={{ $json['Priorität'] }}",
+            "Antragsteller": "={{ $json.Antragsteller }}",
+            "submittedAt": "={{ $json.submittedAt }}"
+          },
+          "matchingColumns": [
+            "Projektname"
+          ],
+          "schema": [
+            {
+              "id": "Projektname",
+              "displayName": "Projektname",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Antragsteller",
+              "displayName": "Antragsteller",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priorität",
+              "displayName": "Priorität",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        -144
+      ],
+      "id": "e9f5d47b-5e30-4a6b-b290-1c7d92157f74",
+      "name": "Erfassung Projektdaten (Project Records)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "4eQIu3Y5wP5nImLi",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "cavuslargul@gmail.com",
+        "subject": "Neuer Projektantrag eingegangen",
+        "emailType": "text",
+        "message": "=Projektname: {{ $json.Projektname }}\nAntragsteller: {{ $json.Antragsteller }}\nPriorität: {{ $json['Priorität'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        -144
+      ],
+      "id": "6ad490ee-a123-481e-bbcc-bed04e76c3d8",
+      "name": "Antragsbestätigung via E-Mail (Confirmation Email)",
+      "webhookId": "dd2cc8f5-e9b3-4744-a55e-a3358b5ff0e8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OhwuQqv2tQ2kMtMR",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Projektantrag ( Project Request Form)": {
+      "main": [
+        [
+          {
+            "node": "Erfassung Projektdaten (Project Records)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Erfassung Projektdaten (Project Records)": {
+      "main": [
+        [
+          {
+            "node": "Antragsbestätigung via E-Mail (Confirmation Email)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "91504064-530e-48ca-ab69-a325106f606e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "eQbPkKW7kYImVmsl",
+  "tags": []
+}
