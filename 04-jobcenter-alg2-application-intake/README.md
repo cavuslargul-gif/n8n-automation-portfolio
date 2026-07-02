@@ -6,6 +6,8 @@ Automates the intake of new ALG II (Bürgergeld) applications at a Jobcenter. Wh
 ## Workflow
 Form submission → Google Sheets (logging) → Gmail (confirmation)
 
+<img width="841" height="397" alt="image" src="https://github.com/user-attachments/assets/356b95c2-5aec-43d8-a054-bfc093cd977a" />
+
 ## How it was built
 - Trigger: n8n Form Trigger (no external auth required)
 - Google Sheets connected via OAuth2
