@@ -65,17 +65,17 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0",
+          "value": "your-spreadsheet-id",
           "mode": "list",
           "cachedResultName": "Projektanträge",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Projektanträge",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jVjHM-S1LyTtZRIX_SKg8q7q-4C54Lk-frruK0kCut0/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -151,7 +151,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Neuer Projektantrag eingegangen",
         "emailType": "text",
         "message": "=Projektname: {{ $json.Projektname }}\nAntragsteller: {{ $json.Antragsteller }}\nPriorität: {{ $json['Priorität'] }}",
