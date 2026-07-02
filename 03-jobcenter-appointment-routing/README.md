@@ -6,6 +6,8 @@ Automates the intake and internal routing of new clients registering for an empl
 ## Workflow
 Form submission → IF (date of birth after cutoff = under 25?) → Gmail (confirmation email)
 
+<img width="637" height="547" alt="image" src="https://github.com/user-attachments/assets/f9e13883-508a-46eb-851b-3e767c7fb658" />
+
 ## How it was built
 - Trigger: n8n Form Trigger (no external auth required)
 - IF Node with date comparison: date of birth is after `$now.minus(25, 'years')`
