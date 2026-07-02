@@ -8,6 +8,8 @@ in German public administration.
 ## Workflow
 Schedule Trigger (daily 8am) → Google Sheets (read participants) → IF (deadline within 7 days) → Gmail (reminder email)
 
+<img width="685" height="395" alt="image" src="https://github.com/user-attachments/assets/740c68e5-b6cc-4c95-a27a-1d64521f7dcd" />
+
 ## How it was built
 - Schedule Trigger configured for daily execution at 8am
 - Google Sheets connected via OAuth2
