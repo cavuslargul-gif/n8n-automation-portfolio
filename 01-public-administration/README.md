@@ -6,6 +6,8 @@ Automates incoming project requests in a public administration context.
 ## Workflow
 Form submission → Google Sheets (logging) → Gmail (confirmation)
 
+<img width="737" height="397" alt="image" src="https://github.com/user-attachments/assets/93326e17-2ed7-4b28-981b-d922a8dc516b" />
+
 ## How it was built
 - Trigger: n8n Form Trigger (no external auth required)
 - Google Sheets connected via OAuth2
