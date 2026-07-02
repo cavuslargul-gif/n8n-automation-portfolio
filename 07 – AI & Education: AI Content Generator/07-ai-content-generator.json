@@ -84,7 +84,7 @@
                     "option": "Instagram"
                   },
                   {
-                    "option": "Newslettter"
+                    "option": "Newsletter"
                   }
                 ]
               },
@@ -196,7 +196,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Dein LinkedIn-Post ist fertig",
         "emailType": "text",
         "message": "={{ $('Contentmixer').item.json.output[0].content[0].text }}",
@@ -220,7 +220,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Dein Newsletter-Entwurf ist fertig",
         "emailType": "text",
         "message": "={{ $('Contentmixer').item.json.output[0].content[0].text }}",
@@ -244,7 +244,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Dein Instagram-Post ist fertig ✨",
         "emailType": "text",
         "message": "={{ $json.output[0].content[0].text }}",
@@ -268,7 +268,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Fehlerbericht",
         "emailType": "text",
         "message": "Es gab einen Fehler bei der Verarbeitung deiner Anfrage.",
