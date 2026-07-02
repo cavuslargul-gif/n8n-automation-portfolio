@@ -9,6 +9,8 @@ Automatically generates platform-specific social media posts and newsletter draf
 ## Workflow
 Form submission → OpenAI (content generation) → Switch (platform routing) → Gmail (generated content delivered by email)
 
+<img width="1043" height="591" alt="image" src="https://github.com/user-attachments/assets/01fe73d9-22f0-4c0d-b5e8-f723d28d14ec" />
+
 
 ## How it was built
 - Trigger: n8n Form Trigger with four fields (topic, target audience, tone, platform)
