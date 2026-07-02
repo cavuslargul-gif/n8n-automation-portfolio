@@ -92,10 +92,10 @@
         "resource": "databasePage",
         "databaseId": {
           "__rl": true,
-          "value": "390f1018-3492-8049-95c6-ffad062b2e8e",
+          "value": "your-database-id",
           "mode": "list",
           "cachedResultName": "Wartungsmeldungen",
-          "cachedResultUrl": "https://app.notion.com/p/390f10183492804995c6ffad062b2e8e"
+          "cachedResultUrl": "https://app.notion.com/p/your-database-id"
         },
         "title": "=WM-{{ $json.Zimmernummer }}-{{ $json.Problemkategorie }}",
         "propertiesUi": {
