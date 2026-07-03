@@ -32,8 +32,21 @@ Guest Feedback Form → Sentiment Analysis (OpenAI) → Routing (Switch) → Ema
 branch — malformed model output would fail at the JSON.parse in the Switch node. 
 In a real deployment this would be the first hardening step (continue-on-error + 
 fallback notification, as implemented in the eval suite 09b).
+   
+## Nodes
 
-## Eval Suite (09b)
+<img width="631" height="473" alt="image" src="https://github.com/user-attachments/assets/b1284516-c053-44dd-a596-1683d40bb4dd" />
+
+## Tools
+- n8n Form Trigger
+- OpenAI GPT-4o-mini
+- n8n Switch Node
+- Gmail (OAuth2)
+
+## Background
+Designed for hotels that want to close the feedback loop automatically. Positive reviews are acknowledged immediately — improving guest experience without manual effort. Negative feedback triggers an instant internal alert so management can respond before the guest writes a public review. The check-in and check-out dates are stored to enable future analysis of seasonal patterns, occupancy correlations, and service quality over time.
+
+# Eval Suite (09b)
 
 <img width="1263" height="555" alt="image" src="https://github.com/user-attachments/assets/7c2830f6-8941-4977-b5e8-adcef91949f5" />
 
@@ -68,17 +81,3 @@ answers and emoji-only feedback.
 policy, extended test set (pure irony without complaint), and model parity
 with the production workflow. Paused for now — a deliberate budget decision,
 documented rather than hidden.
-   
-## Nodes
-
-<img width="631" height="473" alt="image" src="https://github.com/user-attachments/assets/b1284516-c053-44dd-a596-1683d40bb4dd" />
-
-## Tools
-- n8n Form Trigger
-- OpenAI GPT-4o-mini
-- n8n Switch Node
-- Gmail (OAuth2)
-
-## Background
-Designed for hotels that want to close the feedback loop automatically. Positive reviews are acknowledged immediately — improving guest experience without manual effort. Negative feedback triggers an instant internal alert so management can respond before the guest writes a public review. The check-in and check-out dates are stored to enable future analysis of seasonal patterns, occupancy correlations, and service quality over time.
-
