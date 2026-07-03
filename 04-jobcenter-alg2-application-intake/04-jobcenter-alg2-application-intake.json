@@ -77,17 +77,17 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1ZsA65oIQp10FcWQCj1h5cAGrEt2L1506wKG_rbfa4Fw",
+          "value": "your-spreadsheet-id",
           "mode": "list",
           "cachedResultName": "ALG II Antrag",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZsA65oIQp10FcWQCj1h5cAGrEt2L1506wKG_rbfa4Fw/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "ALG II Antrag",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZsA65oIQp10FcWQCj1h5cAGrEt2L1506wKG_rbfa4Fw/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -172,7 +172,7 @@
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Eingangsbestätigung ALG II Antrag",
         "emailType": "text",
         "message": "=Guten Tag {{ $json.Vorname }} {{ $json.Nachname }},  \n\nIhr Antrag auf Bürgergeld (ALG II) ist bei uns eingegangen.  \n\nWir werden Ihren Antrag prüfen und uns in Kürze bei Ihnen melden.  \n\nMit freundlichen Grüßen \nJobcenter",
