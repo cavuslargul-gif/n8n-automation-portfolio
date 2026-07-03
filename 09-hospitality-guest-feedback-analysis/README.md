@@ -32,6 +32,42 @@ Guest Feedback Form → Sentiment Analysis (OpenAI) → Routing (Switch) → Ema
 branch — malformed model output would fail at the JSON.parse in the Switch node. 
 In a real deployment this would be the first hardening step (continue-on-error + 
 fallback notification, as implemented in the eval suite 09b).
+
+## Eval Suite (09b)
+
+<img width="1263" height="555" alt="image" src="https://github.com/user-attachments/assets/7c2830f6-8941-4977-b5e8-adcef91949f5" />
+
+The AI classification step is covered by a separate evaluation workflow
+(`09b-sentiment-eval.json`). Instead of assuming the sentiment classification
+works, it measures how well it works:
+
+**Setup:** Manual Trigger → Google Sheets (25 labeled test cases) → OpenAI
+(same system prompt as the production workflow) → automated comparison
+against the expected label → results written back to the sheet
+(processing status, model output, correct yes/no).
+
+**Test set design:** 25 German hotel feedback cases across three sentiment
+classes, deliberately including hard cases — irony, mixed sentiment, short
+answers and emoji-only feedback.
+
+**Results (v1 baseline):**
+- 23/25 correct = **92%**, measured with GPT-4.1-mini
+- Irony and emoji cases were classified correctly
+- Both misclassifications were mixed-sentiment cases (praise + complaint in
+  one text), resolved by the model in opposite directions — pointing to a
+  definition gap rather than a model weakness
+
+**Labeling policy (derived from the v1 results):**
+- A concretely named complaint counts as negative, even if other aspects
+  are praised — a complaint is a fact, not an interpretation
+- Irony alone, without a named problem, does not make feedback negative
+- Where a numeric rating exists, it should drive the routing; text
+  classification covers channels without ratings (e.g. email)
+
+**Next iteration (v2, planned):** refined prompt implementing the labeling
+policy, extended test set (pure irony without complaint), and model parity
+with the production workflow. Paused for now — a deliberate budget decision,
+documented rather than hidden.
    
 ## Nodes
 
