@@ -1,0 +1,377 @@
+{
+  "name": "09 – Gästefeedback / Guest Feedback Analysis",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ JSON.parse($json.output[0].content[0].text).sentiment }}",
+                    "rightValue": "positiv",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "22594427-191f-48ac-ae22-d8f8cb925608"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ece5aab6-ceb8-4063-97b9-4bdfe8b4c8ad",
+                    "leftValue": "={{ JSON.parse($json.output[0].content[0].text).sentiment }}",
+                    "rightValue": "neutral",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a8f06703-3eb0-4d97-a3ab-f1c99f25159f",
+                    "leftValue": "={{ JSON.parse($json.output[0].content[0].text).sentiment }}",
+                    "rightValue": "negativ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        -304
+      ],
+      "id": "a0b857e4-fc18-4140-87c5-a3fad24e0281",
+      "name": "Weiterleitung Feedbackanalyse (Kunde oder Hotel)"
+    },
+    {
+      "parameters": {
+        "content": "# Nodes\n\n\n- ## Form Trigger = Feedbackeingabe\n**(Feedback intake)**\n- ## OpenAi (Message a model) = Feedbackanalyse via OpenAI \n**(Feedback analysis via OpenAI)**\n- ## Switch Node = Weiterleitung Feedbackanalyse (Kunde oder Hotel) \n**Feedback routing (guest or hotel)**\n- ## Gmail (send: message) = Positive Rückmeldung (Danksagung via E-Mail) \n**Positive feedback (thank-you email)**\n- ## Gmail (send: message) = Neutrale Rückmeldung (Hotel: Beobachtung) \n**Neutral feedback (hotel: observation)**\n- ## Gmail (send: message) = Negative Rückmeldung (Hotel: Handlungsaufforderung) \n**Negative feedback (hotel: action required)**",
+        "height": 608,
+        "width": 768,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        -96
+      ],
+      "typeVersion": 1,
+      "id": "ddfed0f6-693f-4174-95e9-70ca81eaeaa6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Kundenbenachrichtigung",
+        "height": 80,
+        "width": 272,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1008,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "59645c9f-5093-4068-9345-54d976ddd324",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Benachrichtigung Hotelmanagement",
+        "height": 96,
+        "width": 256,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        16
+      ],
+      "typeVersion": 1,
+      "id": "eaa70584-f998-4a53-8bab-f54930878921",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "formTitle": "Gästefeedback / Guest Feedback Form",
+        "formDescription": "Wie war Ihr Aufenthalt? Wir freuen uns über Ihr Feedback und nehmen uns jede Rückmeldung zu Herzen.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Zimmernummer",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Anreise",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Abreise",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Gesamtbewertung ",
+              "fieldType": "radio",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1"
+                  },
+                  {
+                    "option": "2"
+                  },
+                  {
+                    "option": "3"
+                  },
+                  {
+                    "option": "4"
+                  },
+                  {
+                    "option": "5"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Feedback",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "E-Mail",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -48,
+        -288
+      ],
+      "id": "db064ffb-3f1a-483a-b9be-77862a706ec0",
+      "name": "Feedbackeingabe (Feedback intake)",
+      "webhookId": "7a53b97f-85ec-4f67-a1d4-3a253b693440"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "=⚠️ Negatives Gästefeedback – Zimmer {{ $('Feedbackeingabe (Feedback intake)').item.json.Zimmernummer }} – sofortige Aufmerksamkeit erforderlich",
+        "emailType": "text",
+        "message": "=Negatives Feedback eingegangen – bitte zeitnah reagieren.  \n\nZimmer: {{ $('Feedbackeingabe (Feedback intake)').item.json.Zimmernummer }} \nAnreise: {{ $('Feedbackeingabe (Feedback intake)').item.json.Anreise }} \nAbreise: {{ $('Feedbackeingabe (Feedback intake)').item.json.Abreise }} \nBewertung: {{ $('Feedbackeingabe (Feedback intake)').item.json['Gesamtbewertung '] }}/5 \nFeedback: {{ $('Feedbackeingabe (Feedback intake)').item.json.Feedback }}  \nAnalyse: {{ JSON.parse($json.output[0].content[0].text).zusammenfassung }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        240
+      ],
+      "id": "724941a9-aa2f-400b-925a-8b2c3e84fee7",
+      "name": "Negative Rückmeldung (Hotel: Handlungsaufforderung) Negative feedback (hotel: action required)",
+      "webhookId": "507c3f1a-99a5-400b-af27-a325480eafbf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "=Neues Gästefeedback – neutral – Zimmer {{ $('Feedbackeingabe (Feedback intake)').item.json.Zimmernummer }}",
+        "emailType": "text",
+        "message": "=Neues neutrales Feedback eingegangen.  \nZimmer: {{ $('Feedbackeingabe (Feedback intake)').item.json.Zimmernummer }} \nAnreise: {{ $('Feedbackeingabe (Feedback intake)').item.json.Anreise }} \nAbreise: {{ $('Feedbackeingabe (Feedback intake)').item.json.Abreise }} \nBewertung: {{ $('Feedbackeingabe (Feedback intake)').item.json['Gesamtbewertung '] }}/5 \nFeedback: {{ $('Feedbackeingabe (Feedback intake)').item.json.Feedback }}  Analyse: {{ JSON.parse($json.output[0].content[0].text).zusammenfassung }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "89e505fd-992e-4d6f-900d-899857039907",
+      "name": "Neutrale Rückmeldung (Hotel: Beobachtung) Neutral feedback (hotel: observation)",
+      "webhookId": "daf691fc-223e-42af-8a77-630b730f856e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Feedbackeingabe (Feedback intake)').item.json['E-Mail'] }}",
+        "subject": "Vielen Dank für Ihr Feedback – wir freuen uns über Ihre positive Bewertung!",
+        "emailType": "text",
+        "message": "=Sehr geehrte Gästin, sehr geehrter Gast,  \n\nvielen Dank für Ihr Feedback zu Ihrem Aufenthalt in Zimmer {{ $('Feedbackeingabe (Feedback intake)').item.json.Zimmernummer }}.  \nIhre Bewertung: {{ $('Feedbackeingabe (Feedback intake)').item.json['Gesamtbewertung '] }}/5 Ihr Feedback: {{ $('Feedbackeingabe (Feedback intake)').item.json.Feedback }}  \n\nWir freuen uns, dass Sie bei uns waren, und hoffen Sie bald wiederzusehen!  \n\nMit freundlichen Grüßen Ihr Hotel-Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        -288
+      ],
+      "id": "637de933-5371-40a9-acff-60eb3dd690b1",
+      "name": "Positive Rückmeldung (Danksagung via E-Mail) Positive feedback (thank-you email)",
+      "webhookId": "fbd4a697-96b8-4dc9-b2f2-3342c4ffdba4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "6Ma0zqj54VErcxJp",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=Analysiere das folgende Gästefeedback eines Hotels und antworte ausschließlich im JSON-Format:\n\nZimmernummer: {{ $json.Zimmernummer }}\nAnreise: {{ $json.Anreise }}\nAbreise: {{ $json.Abreise }}\nGesamtbewertung: {{ $json['Gesamtbewertung '] }}\nFeedback: {{ $json.Feedback }}\nE-Mail: {{ $json['E-Mail'] }}\n\nAntworte nur mit diesem JSON, ohne zusätzlichen Text, ohne Markdown, ohne Backticks, ohne ```json```.:\n{\n  \"sentiment\": \"positiv\" oder \"neutral\" oder \"negativ\",\n  \"themen\": [\"Sauberkeit\", \"Service\", \"Frühstück\", \"Lage\", \"Preis-Leistung\", \"Sonstiges\"],\n  \"zusammenfassung\": \"Ein Satz der das Feedback zusammenfasst\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        176,
+        -288
+      ],
+      "id": "6ecfc5ae-2b50-4dc9-8c7a-47f7eaa8d3ab",
+      "name": "Feedbackanalyse (Feedback analysis via OpenAI)",
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Weiterleitung Feedbackanalyse (Kunde oder Hotel)": {
+      "main": [
+        [
+          {
+            "node": "Positive Rückmeldung (Danksagung via E-Mail) Positive feedback (thank-you email)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Neutrale Rückmeldung (Hotel: Beobachtung) Neutral feedback (hotel: observation)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Negative Rückmeldung (Hotel: Handlungsaufforderung) Negative feedback (hotel: action required)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feedbackeingabe (Feedback intake)": {
+      "main": [
+        [
+          {
+            "node": "Feedbackanalyse (Feedback analysis via OpenAI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Feedbackanalyse (Feedback analysis via OpenAI)": {
+      "main": [
+        [
+          {
+            "node": "Weiterleitung Feedbackanalyse (Kunde oder Hotel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "341c9499-a91e-4079-b07a-1ecfee26cf1f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "TdvSmVnVwdxedHwY",
+  "tags": []
+}
