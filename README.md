@@ -25,7 +25,8 @@ a problem I've encountered in practice.
 | 06b | AI & Education | Enterprise RAG – Knowledge Chat | n8n Chat Trigger, AI Agent, OpenAI GPT-5, Qdrant |
 | 07 | AI & Education | AI Content Generator | n8n Form, OpenAI, Switch Node, Gmail |
 | 08 | Hospitality | Hotel Maintenance Manager | n8n Form Trigger, Notion, Slack |
-| 09 | Hospitality | Guest Feedback Analysis | n8n Form, OpenAI, Switch Node, Gmail |
+| 09a | Hospitality | Guest Feedback Analysis | n8n Form, OpenAI, Switch Node, Gmail |
+| 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, OpenAI |
 | 10 | Retail | coming soon | — |
 | 11 | Retail | coming soon | — |
 
