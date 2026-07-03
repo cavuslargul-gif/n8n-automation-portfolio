@@ -30,7 +30,7 @@ a problem I've encountered in practice.
 | 11 | Retail | coming soon | — |
 
 
-**Note on error handling:** Error handling is implemented exemplarily in workflows 05, 07 and 09 
+**Note on error handling:** Error handling is implemented exemplarily in workflows 05, 07 and the 09 eval suite (09b)
 (Continue-on-error with dedicated error notification emails). The remaining workflows focus on core 
 process logic — a deliberate scope decision for this portfolio. Error workflows are covered in depth 
 in n8n Course Level 2 (certified: [community.n8n.io/u/guel](https://community.n8n.io/u/guel)).
