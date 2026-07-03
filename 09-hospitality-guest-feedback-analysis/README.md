@@ -27,6 +27,11 @@ Guest Feedback Form → Sentiment Analysis (OpenAI) → Routing (Switch) → Ema
 3. The Switch Node routes the data to the correct email path
 4. Positive: guest receives a personalized thank-you email with their feedback details
 5. Neutral/Negative: management receives an internal alert with full guest data and AI-generated summary for follow-up
+
+**Known limitation:** The production workflow (09) itself runs without an error 
+branch — malformed model output would fail at the JSON.parse in the Switch node. 
+In a real deployment this would be the first hardening step (continue-on-error + 
+fallback notification, as implemented in the eval suite 09b).
    
 ## Nodes
 
