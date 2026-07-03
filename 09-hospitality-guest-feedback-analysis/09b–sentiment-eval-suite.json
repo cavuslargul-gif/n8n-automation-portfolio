@@ -1,0 +1,337 @@
+{
+  "name": "09b – Sentiment Eval Suite",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Nodes \n\n- ## Manual Trigger = Eval-Start (Run Evaluation)\n- ## Get row(s) in sheet = Testfälle lesen (Load Test Cases) \n- ## Message a model = Sentiment-Klassifikation via OpenAI (Sentiment Classification)\n- ## Edit Fields = Auswertung Soll-Ist-Vergleich (Compare Expected vs. Actual)\n- ## Update row in sheet = Ergebnis ins Sheet schreiben (Write Results to Sheet)",
+        "height": 256,
+        "width": 816,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -288
+      ],
+      "typeVersion": 1,
+      "id": "c8021ee7-3f80-42cf-babd-18edbbaf6b33",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5a307b50-2a22-4df5-890d-72843360ebf7",
+      "name": "Eval-Start (Run Evaluation)",
+      "notesInFlow": true,
+      "notes": "Eval-Suite für Workflow 09: liest Testfälle aus Google Sheet, klassifiziert, schreibt Trefferquote zurück"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "your-spreadsheet-id",
+          "mode": "list",
+          "cachedResultName": "eval-testfaelle-workflow09_v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value":  "gid=0",
+          "mode": "list",
+          "cachedResultName": "eval-testfaelle-workflow09",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "bcb79015-7982-4625-bfc8-78fbe2a688bc",
+      "name": "Testfälle lesen (Load Test Cases) ",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X78L7uHBLlRDfksB",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=Analysiere das folgende Gästefeedback eines Hotels und antworte ausschließlich im JSON-Format:\n\nFeedback: {{ $json.feedback }}\n\nAntworte nur mit diesem JSON, ohne zusätzlichen Text, ohne Markdown, ohne Backticks, ohne ```json```.:\n{\n  \"sentiment\": \"positiv\" oder \"neutral\" oder \"negativ\",\n  \"themen\": [\"Sauberkeit\", \"Service\", \"Frühstück\", \"Lage\", \"Preis-Leistung\", \"Sonstiges\"],\n  \"zusammenfassung\": \"Ein Satz der das Feedback zusammenfasst\"\n}\n\n\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        0
+      ],
+      "id": "f0255f03-749a-4bfe-83dc-05c1cb43aa4d",
+      "name": "Sentiment-Klassifikation via OpenAI (Sentiment Classification)",
+      "notesInFlow": true,
+      "credentials": {
+        "openAiApi": {
+          "id": "8jk78syRVzqvpIsC",
+          "name": "n8n free OpenAI API credits"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "notes": "System-Prompt ist 1:1 aus Workflow 09 kopiert – bei Prompt-Änderungen beide Workflows synchron halten!\n\nPrompt copied 1:1 from workflow 09 — keep both in sync when changing it."
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "your-spreadsheet-id",
+          "mode": "list",
+          "cachedResultName": "eval-testfaelle-workflow09_v2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value":  "gid=0",
+          "mode": "list",
+          "cachedResultName": "eval-testfaelle-workflow09",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "verarbeitung": "={{ $json.verarbeitung }}",
+            "erhalten": "={{ $json.erhalten }}",
+            "korrekt": "={{ $json.korrekt }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "feedback",
+              "displayName": "feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "erwartet",
+              "displayName": "erwartet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "hinweis",
+              "displayName": "hinweis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "verarbeitung",
+              "displayName": "verarbeitung",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "erhalten",
+              "displayName": "erhalten",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "korrekt",
+              "displayName": "korrekt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        992,
+        0
+      ],
+      "id": "58aa4d8e-99ae-4c9d-bba5-3d2c4b5412d8",
+      "name": "Ergebnis ins Sheet schreiben (Write Results to Sheet)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "X78L7uHBLlRDfksB",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bd9a0cf9-eea0-40e8-8ceb-60045ee26a16",
+              "name": "id",
+              "value": "={{ $('Testfälle lesen (Load Test Cases) ').item.json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "8f68c6fb-5bd9-4477-a44e-fad63902eca9",
+              "name": "verarbeitung",
+              "value": "OK",
+              "type": "string"
+            },
+            {
+              "id": "5968288f-73fe-4102-80ba-b9f949b1a837",
+              "name": "erhalten",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).sentiment }}",
+              "type": "string"
+            },
+            {
+              "id": "54f1e5a8-fc7c-45c3-98ee-4716413ca4e6",
+              "name": "korrekt",
+              "value": "={{ JSON.parse($json.output[0].content[0].text).sentiment === $('Testfälle lesen (Load Test Cases) ').item.json.erwartet ? 'ja' : 'nein' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        0
+      ],
+      "id": "dda1b63a-467a-480b-abd9-ef034fca8d96",
+      "name": "Auswertung Soll-Ist-Vergleich (Compare Expected vs. Actual)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Eval-Start (Run Evaluation)": {
+      "main": [
+        [
+          {
+            "node": "Testfälle lesen (Load Test Cases) ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Testfälle lesen (Load Test Cases) ": {
+      "main": [
+        [
+          {
+            "node": "Sentiment-Klassifikation via OpenAI (Sentiment Classification)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sentiment-Klassifikation via OpenAI (Sentiment Classification)": {
+      "main": [
+        [
+          {
+            "node": "Auswertung Soll-Ist-Vergleich (Compare Expected vs. Actual)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auswertung Soll-Ist-Vergleich (Compare Expected vs. Actual)": {
+      "main": [
+        [
+          {
+            "node": "Ergebnis ins Sheet schreiben (Write Results to Sheet)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5567cb25-ba50-4ff7-9bb5-33b7883a5277",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+  },
+  "nodeGroups": [],
+  "id": "cLpwYIvEW6STbMHJ",
+  "tags": []
+}
