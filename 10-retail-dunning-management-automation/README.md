@@ -1,12 +1,10 @@
-# 10 – Retail: Dunning Management with Admin Overview
-
-## Use Case
+# Use Case
 Automates the daily and weekly status digest for craft/trade businesses: open appointments, technical workflow errors, and deferred dunning cases (overdue invoices put on hold) are collected and emailed to management. New cases are also automatically turned into a Google Task — with built-in duplicate protection so the same deferred case doesn't spawn a new task every day.
 
 ## Workflow
 Two independent chains in the same workflow — Daily (7:00) and Weekly (Monday, 7:00) — pull appointments (Google Calendar), errors (Data Table) and dunning cases (Data Table), aggregate/merge them, and send a summary email (Gmail). The daily chain additionally creates Google Tasks for new errors and new deferred dunning cases.
 
-<!-- Canvas screenshot goes here -->
+<img width="1516" height="797" alt="image" src="https://github.com/user-attachments/assets/7b240844-3947-463a-aafc-a1ab09e87366" />
 
 ## How it was built
 - **Schedule Trigger** (daily 7:00, weekly Monday 7:00) — two fully separate chains instead of one shared path, to avoid fragile cross-references between time ranges (only one trigger ever fires per execution)
@@ -26,10 +24,6 @@ Two independent chains in the same workflow — Daily (7:00) and Weekly (Monday,
 5. All three lists are merged into one summary email and sent to management via Gmail
 
 **Note:** The duplicate-protection logic (`task_erstellt` flag) was added after testing surfaced that the daily run created a new task every day for the same already-deferred case — the original filter only checked status, with no time or processing window.
-
-## Nodes
-
-<!-- Node list screenshot goes here -->
 
 ## Tools
 - n8n Schedule Trigger
