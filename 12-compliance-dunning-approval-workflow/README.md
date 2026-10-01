@@ -6,7 +6,7 @@ Daily check for overdue invoices that enforces a human approval step before any 
 ## Workflow
 Schedule Trigger (daily 9:00) → Fetch Overdue Invoices (Data Table) → Approval Request (Gmail Send-and-Wait, custom form) → Branch on decision → Send Dunning Email + Mark "gemahnt" (approved) **or** Mark "zurückgestellt" (deferred), both with decision-maker and reason logged
 
-<img width="1054" height="636" alt="image" src="https://github.com/user-attachments/assets/480f6299-583d-415a-a102-73dc90ffb420" />
+<img width="1559" height="693" alt="image" src="https://github.com/user-attachments/assets/70f4719f-d347-43e6-a237-b2822d3fa0fc" />
 
 ## How it was built
 - **Schedule Trigger** runs daily at 9:00
