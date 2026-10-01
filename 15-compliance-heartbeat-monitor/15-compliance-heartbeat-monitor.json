@@ -1,0 +1,120 @@
+{
+  "name": "15 - Heartbeat Monitor for Daily Admin Run",
+  "nodes": [
+    {
+      "id": "sched1",
+      "name": "Täglich prüfen",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [0, 0],
+      "parameters": { "rule": { "interval": [{ "triggerAtHour": 8 }] } }
+    },
+    {
+      "id": "dt1",
+      "name": "Heartbeat heute abrufen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 0],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-heartbeat-log-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "zeitstempel", "condition": "gte", "keyValue": "={{ $today.toISO() }}" }] },
+        "returnAll": true,
+        "alwaysOutputData": true
+      }
+    },
+    {
+      "id": "set1",
+      "name": "Marker",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [240, 160],
+      "parameters": {
+        "mode": "manual",
+        "assignments": { "assignments": [{ "id": "m1", "name": "marker", "type": "boolean", "value": true }] }
+      }
+    },
+    {
+      "id": "merge1",
+      "name": "Kombinieren",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [464, 80],
+      "parameters": { "mode": "append", "combineBy": "combineByPosition", "options": {} }
+    },
+    {
+      "id": "code1",
+      "name": "Treffer auswerten",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [688, 80],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const hatHeartbeat = $input.all().some(function(item) { return item.json.zeitstempel; });\nreturn [{ json: { fehlt: !hatHeartbeat } }];"
+      }
+    },
+    {
+      "id": "if1",
+      "name": "Heartbeat fehlt?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [912, 80],
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "loose" },
+          "conditions": [{ "leftValue": "={{ $json.fehlt }}", "operator": { "type": "boolean", "operation": "true" }, "rightValue": "" }],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "gmail1",
+      "name": "Alert senden",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [688, -80],
+      "parameters": {
+        "sendTo": "kunde@beispielbetrieb.de",
+        "subject": "Warnung: Täglicher Admin-Lauf heute nicht erkannt",
+        "emailType": "text",
+        "message": "=Für den heutigen Tag ({{ $today.toFormat(\"dd.MM.yyyy\") }}) liegt kein Heartbeat-Eintrag von Tamplate_admin_übersicht vor.\n\nMögliche Ursachen: Trigger deaktiviert, Workflow inaktiv, oder ein Fehler vor dem Heartbeat-Schreib-Node, der nicht über den regulären Error-Handler erfasst wurde.\n\nBitte Workflow-Status in n8n prüfen."
+      },
+      "webhookId": "your-webhook-id",
+      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
+    },
+    {
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [100, 300],
+      "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Überwacht, ob der tägliche Admin-Übersicht-Lauf (Tamplate_admin_übersicht) tatsächlich stattgefunden hat - nicht nur, ob er fehlgeschlagen ist. Ein deaktivierter Trigger oder eine inaktive Workflow-Version würde vom zentralen Error-Handler nicht erfasst, da dort gar kein Fehler auftritt - er läuft einfach nicht. Dieser Workflow schließt genau diese Lücke.\n\n**1. Täglich prüfen (Schedule Trigger):** Läuft täglich um 8:00 Uhr - bewusst eine Stunde nach dem 7:00-Uhr-Trigger von Tamplate_admin_übersicht.\n**2. Heartbeat heute abrufen (Data Table):** Prüft heartbeat_log auf einen Eintrag mit heutigem Zeitstempel.\n**3. Marker (Set):** Liefert parallel immer genau 1 Item, unabhängig vom Abfrageergebnis.\n**4. Kombinieren (Merge, append):** Hängt beide Branches zusammen, damit nie 0 Items durchlaufen.\n**5. Treffer auswerten (Code):** Prüft, ob unter den kombinierten Items ein echter Zeitstempel ist.\n**6. Heartbeat fehlt? (If):** Nur im Ja-Zweig geht es weiter.\n**7. Alert senden (Gmail):** Informiert, dass der tägliche Lauf heute nicht erkannt wurde.\n\n**Abgrenzung zum Error-Handler:** Der Error-Handler fängt Fehler INNERHALB einer laufenden Execution. Dieser Workflow fängt das Ausbleiben einer Execution insgesamt.",
+        "color": 4
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Täglich prüfen": { "main": [[{ "node": "Heartbeat heute abrufen", "type": "main", "index": 0 }, { "node": "Marker", "type": "main", "index": 0 }]] },
+    "Heartbeat heute abrufen": { "main": [[{ "node": "Kombinieren", "type": "main", "index": 0 }]] },
+    "Marker": { "main": [[{ "node": "Kombinieren", "type": "main", "index": 1 }]] },
+    "Kombinieren": { "main": [[{ "node": "Treffer auswerten", "type": "main", "index": 0 }]] },
+    "Treffer auswerten": { "main": [[{ "node": "Heartbeat fehlt?", "type": "main", "index": 0 }]] },
+    "Heartbeat fehlt?": { "main": [[{ "node": "Alert senden", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}
