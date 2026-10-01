@@ -6,7 +6,7 @@ Automatically categorizes incoming customer inquiries for a craft/trade business
 ## Workflow
 Webhook (Form Submission) → Normalize Fields → AI Categorization (Groq / Basic LLM Chain) → Category Fallback (Set Node) → Target Address Mapping → Gmail (Internal Notification) + Audit Log (Data Table)
 
-<!-- Canvas screenshot goes here -->
+<img width="1151" height="564" alt="image" src="https://github.com/user-attachments/assets/3c3f74ac-39d5-41b4-8adf-282aba720835" />
 
 ## How it was built
 - **Webhook** receives POST requests simulating the website contact form (name, email, message, source) — designed to later also accept real inbound email as an additional trigger
@@ -27,10 +27,6 @@ Webhook (Form Submission) → Normalize Fields → AI Categorization (Groq / Bas
 6. Every classification is logged to a data table for audit purposes
 
 **Note:** Currently triggered via a test webhook with simulated form data — built to later also accept real inbound email as an additional trigger, without changing the categorization logic.
-
-## Nodes
-
-<!-- Node list screenshot goes here -->
 
 ## Tools
 - n8n Webhook
