@@ -6,7 +6,7 @@ Daily check for overdue invoices that enforces a human approval step before any 
 ## Workflow
 Schedule Trigger (daily 9:00) → Fetch Overdue Invoices (Data Table) → Approval Request (Gmail Send-and-Wait, custom form) → Branch on decision → Send Dunning Email + Mark "gemahnt" (approved) **or** Mark "zurückgestellt" (deferred), both with decision-maker and reason logged
 
-<!-- Canvas screenshot goes here -->
+<img width="1054" height="636" alt="image" src="https://github.com/user-attachments/assets/480f6299-583d-415a-a102-73dc90ffb420" />
 
 ## How it was built
 - **Schedule Trigger** runs daily at 9:00
@@ -27,8 +27,6 @@ Schedule Trigger (daily 9:00) → Fetch Overdue Invoices (Data Table) → Approv
 **Compliance note:** The four-eyes requirement is structurally enforced, not just procedural — the "Mahnung senden" (send dunning email) node is only wired to the approved branch of the IF node. There is no path in the workflow that can send a dunning email without going through the approval form first.
 
 ## Nodes & Tools
-
-<!-- Node list screenshot goes here -->
 
 - n8n Schedule Trigger
 - n8n Data Table
