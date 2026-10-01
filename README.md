@@ -28,7 +28,7 @@ a problem I've encountered in practice.
 | 09a | Hospitality | Guest Feedback Analysis | n8n Form, OpenAI, Switch Node, Gmail |
 | 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, OpenAI |
 | 10 | Retail | Dunning Management with Admin Overview | Schedule Trigger, Google Calendar, n8n Data Table, Aggregate, Merge, Gmail, Google Tasks |
-| 11 | Retail | coming soon | — |
+| 11 | Retail | AI Customer Inquiry Routing | n8n Webhook, Basic LLM Chain, Groq Chat Model, Set, Gmail, Data Table |
 
 
 **Note on error handling:** Error handling is implemented exemplarily in workflows 05, 07 and the 09 eval suite (09b)

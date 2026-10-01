@@ -1,0 +1,209 @@
+{
+  "name": "11 - AI Customer Inquiry Routing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "your-webhook-path",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "webhook1",
+      "name": "Formular-Eingang (Test)",
+      "webhookId": "your-webhook-id",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a1", "name": "name", "type": "string", "value": "={{ $json.body?.name ?? '' }}" },
+            { "id": "a2", "name": "email", "type": "string", "value": "={{ $json.body?.email ?? '' }}" },
+            { "id": "a3", "name": "nachricht", "type": "string", "value": "={{ $json.body?.nachricht ?? '' }}" },
+            { "id": "a4", "name": "quelle", "type": "string", "value": "={{ $json.body?.quelle ?? 'formular' }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set1",
+      "name": "Normalisieren",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "z1",
+              "name": "zielAdresse",
+              "type": "string",
+              "value": "={{ ({Angebot:'angebot@test.de', Terminanfrage:'termin@test.de', Reklamation:'reklamation@test.de', Sonstiges:'sonstiges@test.de'})[$json.kategorie] }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "set2",
+      "name": "Zieladresse festlegen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [960, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.zielAdresse }}",
+        "subject": "=Neue Anfrage: {{ $json.kategorie }}",
+        "emailType": "text",
+        "message": "=Name: {{ $json.name }}\nE-Mail: {{ $json.email }}\nQuelle: {{ $json.quelle }}\n\nNachricht:\n{{ $json.nachricht }}",
+        "options": {}
+      },
+      "id": "gmail1",
+      "name": "Interne Benachrichtigung (Gmail)",
+      "webhookId": "your-webhook-id",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [1200, 0],
+      "credentials": {
+        "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.nachricht }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Du kategorisierst eingehende Kundenanfragen fuer einen Handwerksbetrieb. Antworte ausschliesslich mit genau einem der folgenden Woerter, ohne Anfuehrungszeichen, ohne weiteren Text: Angebot, Terminanfrage, Reklamation, Sonstiges."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "llmchain1",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [416, 0]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-20b",
+        "options": {}
+      },
+      "id": "groqmodel1",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [416, 176],
+      "credentials": {
+        "groqApi": { "id": "your-groq-credential-id", "name": "Groq account" }
+      }
+    },
+    {
+      "parameters": {
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-audit-log-datatable-id" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "zeitstempel": "={{ $now.toISO() }}",
+            "workflow_name": "={{ $workflow.name }}",
+            "nachricht": "={{ $json.nachricht }}",
+            "kategorie": "={{ $json.kategorie }}",
+            "modell": "openai/gpt-oss-20b (Groq)",
+            "status": "erfolg"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "zeitstempel", "displayName": "zeitstempel", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "readOnly": false, "removed": false },
+            { "id": "workflow_name", "displayName": "workflow_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "nachricht", "displayName": "nachricht", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "kategorie", "displayName": "kategorie", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "modell", "displayName": "modell", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "status", "displayName": "status", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "fehlermeldung", "displayName": "fehlermeldung", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "datatable1",
+      "name": "Audit-Log schreiben",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [832, 192],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "#  Use-Case & Nodes \n\n### Use Case: Erfassung der Kundenanfragen aus dem Formular. (aktuell simuliert über Formular-Webhook). KI kategorisiert in eine von vier festgelegten Kategorien und leitet sie automatisch per Mail an die zuständige Stelle weiter. Fallback für nicht zugeordnete Informationen. Ersetzt manuelles Sichten/Verteilen von Anfragen.\n\n**1. Formular-Eingang (Webhook-Trigger):** Nimmt POST-Requests entgegen (simuliert das Website-Formular; Ziel: später zusätzlich echter E-Mail-Eingang)\n**2. Normalisieren (Edit Fields):** Vereinheitlicht die eingehenden Felder auf Name, E-mail, Nachricht, Quelle\n**3. Basic LLM Chain + Groq Chat Model:** Schickt die Nachricht an ein Sprachmodell (Groq, openai/gpt-oss-20b). Hier erfolgt Einordnung in die Kategorien: Angebot, Terminanfrage, Reklamation, Sonstiges\n**4. Kategorie zuordnen (Code-Node):** Liest die KI-Antwort aus, fällt bei unerwarteter Antwort auf \"Sonstiges\" zurück (Fallback)\n**5. Zieladresse festlegen(Edit Fields):** Feste Kategorie→E-Mail-Zuordnung (aktuell Platzhalter-Adressen, z.B. angebot@test.de)\n**6. Interne Benachrichtigung (Gmail) :** versendet die Anfrage inkl. Absenderdaten an die zuständige Adresse\n\nVerbindung zu **Error-Handler-Workflow** mit **Error Trigger Node**. Fehler werden bei Zuordnung zu einem Workflow automatisiert über n8n eingetragen. **Nur bei Produktions-Executions aktiv.**  Für den Testfall mit simulierten PIN-Daten getestet.\n\n**Audit-Log(Data Table)** für KI-Einsatz-Dokumentation beim Code-Node ergänzt.\n",
+        "height": 336,
+        "width": 1472,
+        "color": 4
+      },
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-64, -400]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "k1", "name": "name", "type": "string", "value": "={{ $('Normalisieren').item.json.name }}" },
+            { "id": "k2", "name": "email", "type": "string", "value": "={{ $('Normalisieren').item.json.email }}" },
+            { "id": "k3", "name": "nachricht", "type": "string", "value": "={{ $('Normalisieren').item.json.nachricht }}" },
+            { "id": "k4", "name": "quelle", "type": "string", "value": "={{ $('Normalisieren').item.json.quelle }}" },
+            {
+              "id": "k5",
+              "name": "kategorie",
+              "type": "string",
+              "value": "={{ ['Angebot','Terminanfrage','Reklamation','Sonstiges'].includes(($json.text ?? $json.output ?? $json.response ?? '').trim()) ? ($json.text ?? $json.output ?? $json.response ?? '').trim() : 'Sonstiges' }}"
+            },
+            { "id": "k6", "name": "kiRohantwort", "type": "string", "value": "={{ ($json.text ?? $json.output ?? $json.response ?? '').trim() }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set3",
+      "name": "Kategorie zuordnen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [720, 16]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Formular-Eingang (Test)": { "main": [[{ "node": "Normalisieren", "type": "main", "index": 0 }]] },
+    "Normalisieren": { "main": [[{ "node": "Basic LLM Chain", "type": "main", "index": 0 }]] },
+    "Zieladresse festlegen": { "main": [[{ "node": "Interne Benachrichtigung (Gmail)", "type": "main", "index": 0 }]] },
+    "Groq Chat Model": { "ai_languageModel": [[{ "node": "Basic LLM Chain", "type": "ai_languageModel", "index": 0 }]] },
+    "Basic LLM Chain": { "main": [[{ "node": "Kategorie zuordnen", "type": "main", "index": 0 }]] },
+    "Kategorie zuordnen": {
+      "main": [[
+        { "node": "Zieladresse festlegen", "type": "main", "index": 0 },
+        { "node": "Audit-Log schreiben", "type": "main", "index": 0 }
+      ]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}
