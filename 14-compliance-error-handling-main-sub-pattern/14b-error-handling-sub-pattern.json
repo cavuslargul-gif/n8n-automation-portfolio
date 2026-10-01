@@ -1,0 +1,47 @@
+{
+  "name": "14b - Error Handling Sub-Pattern",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "errtrig1",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "f001", "name": "error_message", "type": "string", "value": "={{ $json.execution.error.message }}" },
+            { "id": "f002", "name": "failed_workflow", "type": "string", "value": "={{ $json.workflow.name }}" },
+            { "id": "f003", "name": "last_node", "type": "string", "value": "={{ $json.execution.lastNodeExecuted }}" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [224, 0],
+      "id": "set2",
+      "name": "Extract Error Info"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": { "main": [[{ "node": "Extract Error Info", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}
