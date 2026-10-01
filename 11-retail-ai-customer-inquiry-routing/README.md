@@ -55,6 +55,8 @@ The four-category classification step is covered by a separate evaluation workfl
 
 **Setup:** Manual Trigger → n8n Data Table (25 labeled test cases) → Basic LLM Chain (same system prompt and model as the production workflow) → automated comparison against the expected category → results written back to the data table (model answer, correct yes/no, status).
 
+<img width="718" height="628" alt="image" src="https://github.com/user-attachments/assets/c618ba4e-e473-4d9e-8df6-bb0249b9c822" />
+
 **Test set design:** 25 German craft-business inquiries across all four categories, deliberately including five hard cases — a price renegotiation phrased as a complaint but still a quote request, a missed appointment framed as a request for a new one rather than a complaint, a very short message, an emoji-only message, and a billing complaint that mentions price but isn't a quote request.
 
 **Results (v1 baseline):**
