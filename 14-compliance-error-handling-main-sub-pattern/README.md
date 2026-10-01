@@ -5,9 +5,12 @@ A reusable Main/Sub error-handling pattern: a dedicated "sub" workflow that only
 
 ## Workflow
 **14a (Main, test harness):** Schedule Trigger → Mock Order (Set) → Simulate Failure (Stop and Error)
+
+<img width="819" height="453" alt="image" src="https://github.com/user-attachments/assets/8de127ee-cb23-4b44-bd8d-51605eba35ee" />
+
 **14b (Sub, the actual pattern):** Error Trigger → Extract Error Info (Set)
 
-<!-- Canvas screenshot goes here -->
+<img width="816" height="456" alt="image" src="https://github.com/user-attachments/assets/08afabf4-35de-417a-b8be-b71e10a510a8" />
 
 ## How it was built
 - **14a** runs every 5 minutes, builds a fake order record (`customer_id`, `action`, `amount`) with a Set node, and then deliberately stops with a hardcoded error ("Payment processing failed: gateway timeout") via the Stop and Error node — purely to produce a reliable, repeatable failure for testing
