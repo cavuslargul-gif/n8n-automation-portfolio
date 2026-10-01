@@ -25,7 +25,7 @@ Two independent chains in the same workflow — Daily (7:00) and Weekly (Monday,
 
 **Note:** The duplicate-protection logic (`task_erstellt` flag) was added after testing surfaced that the daily run created a new task every day for the same already-deferred case — the original filter only checked status, with no time or processing window.
 
-## Tools
+## Nodes & Tools
 - n8n Schedule Trigger
 - Google Calendar (OAuth2)
 - n8n Data Table

@@ -33,11 +33,10 @@ branch — malformed model output would fail at the JSON.parse in the Switch nod
 In a real deployment this would be the first hardening step (continue-on-error + 
 fallback notification, as implemented in the eval suite 09b).
    
-## Nodes
+## Nodes & Tools
 
 <img width="631" height="473" alt="image" src="https://github.com/user-attachments/assets/b1284516-c053-44dd-a596-1683d40bb4dd" />
 
-## Tools
 - n8n Form Trigger
 - OpenAI GPT-4o-mini
 - n8n Switch Node

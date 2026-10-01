@@ -28,7 +28,7 @@ Webhook (Form Submission) → Normalize Fields → AI Categorization (Groq / Bas
 
 **Note:** Currently triggered via a test webhook with simulated form data — built to later also accept real inbound email as an additional trigger, without changing the categorization logic.
 
-## Tools
+## Nodes & Tools
 - n8n Webhook
 - n8n Set / Edit Fields
 - n8n Basic LLM Chain
