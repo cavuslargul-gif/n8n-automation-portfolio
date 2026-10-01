@@ -1,0 +1,407 @@
+{
+  "name": "10 - Automatisierte Erfassung: Mahnwesen und Tagesgeschäft",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# Use-Case & Nodes\n\n**Use Case:** Automatische Zusammenfassung für Führung/Team. Termine, technische Fehler und zurückgestellte Mahnungen (Offene Posten). Zwei unabhängige Ketten im selben Workflow: täglich (7:00 Uhr) und wöchentlich (Montag: 7:00 Uhr). Ausschließlich Informationsworkflow für die E-Mails. Keine automatischen Kunden- oder Geschäftsaktionen. \n\n**Zusätzlich:** neue Ausnahmen werden täglich als Google Task angelegt, damit sie aktiv nachverfolgt werden.\n\n**Täglich-Kette:**\n1. Täglich (**Schedule Trigger,** 7:00)\n2. Terminabruf (**Google Calendar,** Get Many) → Termine heute sammeln (**Aggregate**)\n3. Fehlermeldungen (täglich) (**Data Table workflow_error_log,** letzte 24h) → Fehlermeldungen sammeln (**Aggregate**) + parallel Fehler-Tasks anlegen (**Google Tasks,** ein Task pro Fehler)\n4. Mahnwesen: Offene Posten (täglich) (**Data Table offene_posten,** status=zurückgestellt) → Mahnwesen: Offene Posten (tagesaktuell) (**Aggregate**) + parallel Offene Posten-Tasks anlegen (**Google Tasks,** ein Task pro zurückgestelltem Posten)\n5. **Merge** Heute 1+2 (kombiniert Termine/Fehler/Zurückgestellte zu einem Datensatz)\n6. Tagesübersicht senden (**Gmail**) — Textmail mit allen drei Listen\n\n**Wöchentlich Kette:** strukturell identisch, aber Zeitraum = diese Woche, Fehler-Fenster = letzte 7 Tage, und ohne Task-Erstellung (sonst Duplikate zu den täglich schon angelegten Tasks) — nur Wochenübersicht senden (**Gmail**).\n\nWarum zwei komplett getrennte Ketten statt einer gemeinsamen: Ein gemeinsamer Pfad mit zwei Triggern hätte fragile Cross-Referenzen zwischen den Zweigen gebraucht (welcher Zeitraum gerade gilt), da in einer Ausführung immer nur ein Trigger tatsächlich gelaufen ist. Zwei unabhängige, strukturgleiche Ketten sind unhandlicher, aber robust und leicht nachvollziehbar.\n\n**Fallback:** Keine Termine/Fehler/Offene Posten im Zeitraum → jeweilige Liste zeigt \"Keine X\" in der Mail, kein Fehler, keine leeren Tasks.\n\n**Error-Handling:** Workflow an den zentralen Error-Handler-Workflow gekoppelt (**Settings → Error Workflow**). Landet in \"workflow_error_log.\" \n\n**Wichtig:** Ein Fehler in diesem Workflow selbst würde also auch wieder in der nächsten Tagesübersicht als \"Fehler\" auftauchen.",
+        "height": 576,
+        "width": 1104,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-1216, -128],
+      "typeVersion": 1,
+      "id": "f2aba7b5-93c9-420b-a6f9-9eafaf66e82d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "destinationFieldName": "fehler",
+        "options": {}
+      },
+      "id": "aggErrH",
+      "name": "Fehler heute sammeln",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, -64]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "kunde@beispielbetrieb.de"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "calW",
+      "name": "Termine Woche abrufen",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [240, 592],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "your-google-calendar-credential-id",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "your-error-log-datatable-id"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "zeitstempel",
+              "condition": "gte",
+              "keyValue": "={{ $now.minus({ days: 7 }).toISO() }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "errW",
+      "name": "Fehler Woche abrufen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 736],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "field": "weeks", "triggerAtDay": [1], "triggerAtHour": 7 }]
+        }
+      },
+      "id": "trig2",
+      "name": "Wöchentlich",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [-16, 368]
+    },
+    {
+      "parameters": {
+        "sendTo": "kunde@beispielbetrieb.de",
+        "subject": "=Wochenübersicht ab {{ $now.startOf('week').toFormat('dd.MM.yyyy') }}",
+        "emailType": "text",
+        "message": "=Wochenübersicht ab {{ $now.startOf('week').toFormat('dd.MM.yyyy') }}\n\nTermine diese Woche ({{ $json.termine.length }}):\n{{ $json.termine.length ? $json.termine.map(t => '- ' + (t.summary || 'Ohne Titel') + (t.start && t.start.dateTime ? ' am ' + DateTime.fromISO(t.start.dateTime).toFormat('dd.MM. HH:mm') : '')).join('\\n') : '- Keine Termine' }}\n\nFehler letzte 7 Tage ({{ $json.fehler.length }}):\n{{ $json.fehler.length ? $json.fehler.map(f => '- ' + f.node_name + ': ' + f.fehlermeldung).join('\\n') : '- Keine Fehler' }}\n\nZurückgestellte Mahnungen ({{ $json.zurueckgestellte.length }}):\n{{ $json.zurueckgestellte.length ? $json.zurueckgestellte.map(z => '- ' + z.rechnungsnummer + ' (' + z.kunde + '): ' + (z.begruendung || 'keine Begründung')).join('\\n') : '- Keine zurückgestellten Posten' }}",
+        "options": {}
+      },
+      "id": "gmailW",
+      "name": "Wochenübersicht senden",
+      "webhookId": "your-webhook-id",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [1200, 720],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": { "interval": [{ "triggerAtHour": 7 }] }
+      },
+      "id": "trig1",
+      "name": "Täglich",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "sendTo": "kunde@beispielbetrieb.de",
+        "subject": "=Tagesübersicht {{ $now.toFormat('dd.MM.yyyy') }}",
+        "emailType": "text",
+        "message": "=Tagesübersicht - {{ $now.toFormat('dd.MM.yyyy') }}\n\nTermine heute ({{ $json.termine.length }}):\n{{ $json.termine.length ? $json.termine.map(t => '- ' + (t.summary || 'Ohne Titel') + (t.start && t.start.dateTime ? ' um ' + DateTime.fromISO(t.start.dateTime).toFormat('HH:mm') : '')).join('\\n') : '- Keine Termine' }}\n\nFehler letzte 24h ({{ $json.fehler.length }}):\n{{ $json.fehler.length ? $json.fehler.map(f => '- ' + f.node_name + ': ' + f.fehlermeldung).join('\\n') : '- Keine Fehler' }}\n\nZurückgestellte Mahnungen ({{ $json.zurueckgestellte.length }}):\n{{ $json.zurueckgestellte.length ? $json.zurueckgestellte.map(z => '- ' + z.rechnungsnummer + ' (' + z.kunde + '): ' + (z.begruendung || 'keine Begründung')).join('\\n') : '- Keine zurückgestellten Posten' }}",
+        "options": {}
+      },
+      "id": "gmailH",
+      "name": "Tagesübersicht senden",
+      "webhookId": "your-webhook-id",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [1200, -48],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": { "mode": "combine", "combineBy": "combineByPosition", "options": {} },
+      "id": "mergeH1",
+      "name": "Merge: Täglich",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [720, -128]
+    },
+    {
+      "parameters": { "mode": "combine", "combineBy": "combineByPosition", "options": {} },
+      "id": "mergeW1",
+      "name": "Merge: Woche ",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [720, 640]
+    },
+    {
+      "parameters": { "mode": "combine", "combineBy": "combineByPosition", "options": {} },
+      "id": "mergeW2",
+      "name": "Zusammenfassung: Woche",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [960, 720]
+    },
+    {
+      "parameters": { "mode": "combine", "combineBy": "combineByPosition", "options": {} },
+      "id": "mergeH2",
+      "name": "Zusammenfassung: Täglich",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [960, -48]
+    },
+    {
+      "parameters": { "aggregate": "aggregateAllItemData", "destinationFieldName": "termine", "options": {} },
+      "id": "aggCalW",
+      "name": "Terminübersicht",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, 592]
+    },
+    {
+      "parameters": { "aggregate": "aggregateAllItemData", "destinationFieldName": "fehler", "options": {} },
+      "id": "aggErrW",
+      "name": "Fehlerübersicht",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, 736]
+    },
+    {
+      "parameters": { "aggregate": "aggregateAllItemData", "destinationFieldName": "zurueckgestellte", "options": {} },
+      "id": "aggZgW",
+      "name": "Mahnwesen: Wochenübersicht",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, 880]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-offene-posten-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "status", "keyValue": "zurueckgestellt" }] },
+        "returnAll": true
+      },
+      "id": "zgW",
+      "name": "Mahnwesen: Offene Posten (Woche)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 880],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-offene-posten-datatable-id" },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            { "keyName": "status", "keyValue": "zurueckgestellt" },
+            { "keyName": "task_erstellt", "keyValue": false }
+          ]
+        },
+        "returnAll": true
+      },
+      "id": "zgH",
+      "name": "Mahnwesen: Offene Posten (täglich)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 192],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-error-log-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "zeitstempel", "condition": "gte", "keyValue": "={{ $now.minus({ days: 1 }).toISO() }}" }] },
+        "returnAll": true
+      },
+      "id": "errH",
+      "name": "Fehlermeldungen (täglich)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 0],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": { "aggregate": "aggregateAllItemData", "destinationFieldName": "termine", "options": {} },
+      "id": "aggCalH",
+      "name": "Heutige Termine",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, -208]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": { "__rl": true, "mode": "id", "value": "kunde@beispielbetrieb.de" },
+        "returnAll": true,
+        "options": {}
+      },
+      "id": "calH",
+      "name": "Terminabruf",
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [240, -208],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleCalendarOAuth2Api": { "id": "your-google-calendar-credential-id", "name": "Google Calendar account" }
+      }
+    },
+    {
+      "parameters": {
+        "task": "@default",
+        "title": "=Zurückgestellte Mahnung: {{ $json.rechnungsnummer }} - {{ $json.kunde }}",
+        "additionalFields": { "notes": "=Begründung: {{ $json.begruendung }}\nEntschieden von: {{ $json.entschieden_von }}" }
+      },
+      "id": "gtaskZgH",
+      "name": "Mahnwesen: Aufgaben (tagesaktuell)",
+      "type": "n8n-nodes-base.googleTasks",
+      "typeVersion": 1,
+      "position": [480, 416],
+      "credentials": {
+        "googleTasksOAuth2Api": { "id": "your-google-tasks-credential-id", "name": "Google Tasks account" }
+      }
+    },
+    {
+      "parameters": {
+        "task": "@default",
+        "title": "=Fehler: {{ $json.node_name }} - {{ $json.fehlermeldung }}",
+        "additionalFields": { "notes": "=Workflow: {{ $json.workflow_name }}\nExecution: {{ $json.execution_id }}\nZeit: {{ $json.zeitstempel }}" }
+      },
+      "id": "gtaskErrH",
+      "name": "Fehler: Aufgaben (tagesaktuell)",
+      "type": "n8n-nodes-base.googleTasks",
+      "typeVersion": 1,
+      "position": [480, 80],
+      "credentials": {
+        "googleTasksOAuth2Api": { "id": "your-google-tasks-credential-id", "name": "Google Tasks account" }
+      }
+    },
+    {
+      "parameters": { "aggregate": "aggregateAllItemData", "destinationFieldName": "zurueckgestellte", "options": {} },
+      "id": "aggZgH",
+      "name": "Mahnwesen: Offene Posten (tagesaktuell)",
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [480, 256]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-offene-posten-datatable-id" },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            { "keyName": "rechnungsnummer", "keyValue": "={{ $('Mahnwesen: Offene Posten (täglich)').item.json.rechnungsnummer }}" }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": { "task_erstellt": true },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "rechnungsnummer", "displayName": "rechnungsnummer", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "kunde", "displayName": "kunde", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "kunden_email", "displayName": "kunden_email", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "betrag", "displayName": "betrag", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false },
+            { "id": "faelligkeitsdatum", "displayName": "faelligkeitsdatum", "required": false, "defaultMatch": false, "display": true, "type": "dateTime", "readOnly": false, "removed": false },
+            { "id": "status", "displayName": "status", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "entschieden_von", "displayName": "entschieden_von", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "begruendung", "displayName": "begruendung", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "task_erstellt", "displayName": "task_erstellt", "required": false, "defaultMatch": false, "display": true, "type": "boolean", "readOnly": false, "removed": false }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "3450bc24-ed11-4366-9dde-a2f955813207",
+      "name": "Mahnwesen: Task-Flag setzen",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [704, 416]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fehler heute sammeln": { "main": [[{ "node": "Merge: Täglich", "type": "main", "index": 1 }]] },
+    "Termine Woche abrufen": { "main": [[{ "node": "Terminübersicht", "type": "main", "index": 0 }]] },
+    "Fehler Woche abrufen": { "main": [[{ "node": "Fehlerübersicht", "type": "main", "index": 0 }]] },
+    "Wöchentlich": {
+      "main": [[
+        { "node": "Termine Woche abrufen", "type": "main", "index": 0 },
+        { "node": "Fehler Woche abrufen", "type": "main", "index": 0 },
+        { "node": "Mahnwesen: Offene Posten (Woche)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Täglich": {
+      "main": [[
+        { "node": "Terminabruf", "type": "main", "index": 0 },
+        { "node": "Fehlermeldungen (täglich)", "type": "main", "index": 0 },
+        { "node": "Mahnwesen: Offene Posten (täglich)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Merge: Täglich": { "main": [[{ "node": "Zusammenfassung: Täglich", "type": "main", "index": 0 }]] },
+    "Merge: Woche ": { "main": [[{ "node": "Zusammenfassung: Woche", "type": "main", "index": 0 }]] },
+    "Zusammenfassung: Woche": { "main": [[{ "node": "Wochenübersicht senden", "type": "main", "index": 0 }]] },
+    "Zusammenfassung: Täglich": { "main": [[{ "node": "Tagesübersicht senden", "type": "main", "index": 0 }]] },
+    "Terminübersicht": { "main": [[{ "node": "Merge: Woche ", "type": "main", "index": 0 }]] },
+    "Fehlerübersicht": { "main": [[{ "node": "Merge: Woche ", "type": "main", "index": 1 }]] },
+    "Mahnwesen: Wochenübersicht": { "main": [[{ "node": "Zusammenfassung: Woche", "type": "main", "index": 1 }]] },
+    "Mahnwesen: Offene Posten (Woche)": { "main": [[{ "node": "Mahnwesen: Wochenübersicht", "type": "main", "index": 0 }]] },
+    "Mahnwesen: Offene Posten (täglich)": {
+      "main": [[
+        { "node": "Mahnwesen: Offene Posten (tagesaktuell)", "type": "main", "index": 0 },
+        { "node": "Mahnwesen: Aufgaben (tagesaktuell)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Fehlermeldungen (täglich)": {
+      "main": [[
+        { "node": "Fehler heute sammeln", "type": "main", "index": 0 },
+        { "node": "Fehler: Aufgaben (tagesaktuell)", "type": "main", "index": 0 }
+      ]]
+    },
+    "Heutige Termine": { "main": [[{ "node": "Merge: Täglich", "type": "main", "index": 0 }]] },
+    "Terminabruf": { "main": [[{ "node": "Heutige Termine", "type": "main", "index": 0 }]] },
+    "Mahnwesen: Offene Posten (tagesaktuell)": { "main": [[{ "node": "Zusammenfassung: Täglich", "type": "main", "index": 1 }]] },
+    "Mahnwesen: Aufgaben (tagesaktuell)": { "main": [[{ "node": "Mahnwesen: Task-Flag setzen", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}

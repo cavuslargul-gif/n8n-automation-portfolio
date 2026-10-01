@@ -27,7 +27,7 @@ a problem I've encountered in practice.
 | 08 | Hospitality | Hotel Maintenance Manager | n8n Form Trigger, Notion, Slack |
 | 09a | Hospitality | Guest Feedback Analysis | n8n Form, OpenAI, Switch Node, Gmail |
 | 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, OpenAI |
-| 10 | Retail | coming soon | — |
+| 10 | Retail | Automatisierte Erfassung: Mahnwesen und Tagesgeschäft | Schedule Trigger, Google Calendar, n8n Data Table, Aggregate, Merge, Gmail, Google Tasks |
 | 11 | Retail | coming soon | — |
 
 
