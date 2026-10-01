@@ -74,6 +74,67 @@
     },
     {
       "parameters": {
+        "action": "hash",
+        "type": "SHA256",
+        "value": "={{ $json.name }}|{{ $json.email }}|{{ $json.nachricht }}",
+        "dataPropertyName": "request_id_hash",
+        "encoding": "hex"
+      },
+      "id": "crypto1",
+      "name": "Request-ID berechnen",
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [240, 160]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            { "id": "r1", "name": "request_id", "type": "string", "value": "={{ $('Formular-Eingang (Test)').item.json.body?.request_id ?? $json.request_id_hash }}" }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "id": "set4",
+      "name": "Request-ID festlegen",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [240, 320]
+    },
+    {
+      "parameters": {
+        "operation": "rowNotExists",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-dedupe-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "request_id", "keyValue": "={{ $json.request_id }}" }] }
+      },
+      "id": "datatable2",
+      "name": "Duplikat-Prüfung",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 480]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-dedupe-datatable-id" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "request_id": "={{ $('Request-ID festlegen').item.json.request_id }}",
+            "zeitstempel": "={{ $now.toISO() }}"
+          }
+        }
+      },
+      "id": "datatable3",
+      "name": "Dedupe-Key speichern",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [1056, 192]
+    },
+    {
+      "parameters": {
         "promptType": "define",
         "text": "={{ $json.nachricht }}",
         "messages": {
@@ -142,7 +203,7 @@
     },
     {
       "parameters": {
-        "content": "#  Use-Case & Nodes \n\n### Use Case: Erfassung der Kundenanfragen aus dem Formular. (aktuell simuliert über Formular-Webhook). KI kategorisiert in eine von vier festgelegten Kategorien und leitet sie automatisch per Mail an die zuständige Stelle weiter. Fallback für nicht zugeordnete Informationen. Ersetzt manuelles Sichten/Verteilen von Anfragen.\n\n**1. Formular-Eingang (Webhook-Trigger):** Nimmt POST-Requests entgegen (simuliert das Website-Formular; Ziel: später zusätzlich echter E-Mail-Eingang)\n**2. Normalisieren (Edit Fields):** Vereinheitlicht die eingehenden Felder auf Name, E-mail, Nachricht, Quelle\n**3. Basic LLM Chain + Groq Chat Model:** Schickt die Nachricht an ein Sprachmodell (Groq, openai/gpt-oss-20b). Hier erfolgt Einordnung in die Kategorien: Angebot, Terminanfrage, Reklamation, Sonstiges\n**4. Kategorie zuordnen (Code-Node):** Liest die KI-Antwort aus, fällt bei unerwarteter Antwort auf \"Sonstiges\" zurück (Fallback)\n**5. Zieladresse festlegen(Edit Fields):** Feste Kategorie→E-Mail-Zuordnung (aktuell Platzhalter-Adressen, z.B. angebot@test.de)\n**6. Interne Benachrichtigung (Gmail) :** versendet die Anfrage inkl. Absenderdaten an die zuständige Adresse\n\nVerbindung zu **Error-Handler-Workflow** mit **Error Trigger Node**. Fehler werden bei Zuordnung zu einem Workflow automatisiert über n8n eingetragen. **Nur bei Produktions-Executions aktiv.**  Für den Testfall mit simulierten PIN-Daten getestet.\n\n**Audit-Log(Data Table)** für KI-Einsatz-Dokumentation beim Code-Node ergänzt.\n",
+        "content": "#  Use-Case & Nodes \n\n### Use Case: Erfassung der Kundenanfragen aus dem Formular. (aktuell simuliert über Formular-Webhook). KI kategorisiert in eine von vier festgelegten Kategorien und leitet sie automatisch per Mail an die zuständige Stelle weiter. Fallback für nicht zugeordnete Informationen. Ersetzt manuelles Sichten/Verteilen von Anfragen.\n\n**1. Formular-Eingang (Webhook-Trigger):** Nimmt POST-Requests entgegen (simuliert das Website-Formular; Ziel: später zusätzlich echter E-Mail-Eingang)\n**2. Normalisieren (Edit Fields):** Vereinheitlicht die eingehenden Felder auf Name, E-Mail, Nachricht, Quelle\n**3. Request-ID berechnen (Crypto, SHA256):** Hash aus Name+E-Mail+Nachricht als Fallback-Dedupe-Key\n**4. Request-ID festlegen (Edit Fields):** Nutzt eine vom Client mitgeschickte request_id, falls vorhanden, sonst den Hash\n**5. Duplikat-Prüfung (Data Table, rowNotExists):** Bricht sauber ab, wenn diese Anfrage (z.B. durch einen Webhook-Retry) bereits verarbeitet wurde — kein zweiter Task, keine zweite Mail\n**6. Basic LLM Chain + Groq Chat Model:** Schickt die Nachricht an ein Sprachmodell (Groq, openai/gpt-oss-20b). Hier erfolgt Einordnung in die Kategorien: Angebot, Terminanfrage, Reklamation, Sonstiges\n**7. Kategorie zuordnen (Edit Fields):** Liest die KI-Antwort aus, fällt bei unerwarteter Antwort auf \"Sonstiges\" zurück (Fallback)\n**8. Zieladresse festlegen (Edit Fields):** Feste Kategorie→E-Mail-Zuordnung (aktuell Platzhalter-Adressen, z.B. angebot@test.de)\n**9. Interne Benachrichtigung (Gmail):** versendet die Anfrage inkl. Absenderdaten an die zuständige Adresse\n**10. Audit-Log schreiben (Data Table):** KI-Einsatz-Dokumentation\n**11. Dedupe-Key speichern (Data Table):** Erst nach erfolgreichem Audit-Log-Eintrag — ein Fehler vor der Verarbeitung führt so eher zu einer harmlosen Doppelverarbeitung als zu einem verlorenen Request\n\nVerbindung zu **Error-Handler-Workflow** mit **Error Trigger Node**. Fehler werden bei Zuordnung zu einem Workflow automatisiert über n8n eingetragen. **Nur bei Produktions-Executions aktiv.**\n\n**Idempotency getestet:** Zwei identische Anfragen nacheinander über den echten Webhook-Trigger gesendet — die zweite wurde korrekt an der Duplikat-Prüfung gestoppt, kein zusätzlicher Audit-Log-Eintrag, keine zweite Mail.\n",
         "height": 336,
         "width": 1472,
         "color": 4
@@ -182,7 +243,10 @@
   "pinData": {},
   "connections": {
     "Formular-Eingang (Test)": { "main": [[{ "node": "Normalisieren", "type": "main", "index": 0 }]] },
-    "Normalisieren": { "main": [[{ "node": "Basic LLM Chain", "type": "main", "index": 0 }]] },
+    "Normalisieren": { "main": [[{ "node": "Request-ID berechnen", "type": "main", "index": 0 }]] },
+    "Request-ID berechnen": { "main": [[{ "node": "Request-ID festlegen", "type": "main", "index": 0 }]] },
+    "Request-ID festlegen": { "main": [[{ "node": "Duplikat-Prüfung", "type": "main", "index": 0 }]] },
+    "Duplikat-Prüfung": { "main": [[{ "node": "Basic LLM Chain", "type": "main", "index": 0 }]] },
     "Zieladresse festlegen": { "main": [[{ "node": "Interne Benachrichtigung (Gmail)", "type": "main", "index": 0 }]] },
     "Groq Chat Model": { "ai_languageModel": [[{ "node": "Basic LLM Chain", "type": "ai_languageModel", "index": 0 }]] },
     "Basic LLM Chain": { "main": [[{ "node": "Kategorie zuordnen", "type": "main", "index": 0 }]] },
@@ -191,7 +255,8 @@
         { "node": "Zieladresse festlegen", "type": "main", "index": 0 },
         { "node": "Audit-Log schreiben", "type": "main", "index": 0 }
       ]]
-    }
+    },
+    "Audit-Log schreiben": { "main": [[{ "node": "Dedupe-Key speichern", "type": "main", "index": 0 }]] }
   },
   "active": false,
   "settings": {
