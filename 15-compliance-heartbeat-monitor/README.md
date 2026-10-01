@@ -6,7 +6,7 @@ Catches the one failure mode the central error handler (#13) structurally cannot
 ## Workflow
 Schedule Trigger (daily 8:00) → Query Today's Heartbeat (Data Table) + constant Marker item, merged (append) → Evaluate (Code) → Heartbeat Missing? (IF) → Alert Email (only if missing)
 
-<!-- Canvas screenshot goes here -->
+<img width="1208" height="773" alt="image" src="https://github.com/user-attachments/assets/1598dc98-7409-4cca-ba4d-abf50e6ac878" />
 
 ## How it was built
 - **Schedule Trigger** runs daily at 8:00 — deliberately one hour after workflow 10's 7:00 trigger, giving its daily chain time to complete
