@@ -1,4 +1,6 @@
-# Use Case
+# 10 - Dunning Management with Admin Overview
+
+## Use Case
 Automates the daily and weekly status digest for craft/trade businesses: open appointments, technical workflow errors, and deferred dunning cases (overdue invoices put on hold) are collected and emailed to management. New cases are also automatically turned into a Google Task — with built-in duplicate protection so the same deferred case doesn't spawn a new task every day.
 
 ## Workflow
