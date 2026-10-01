@@ -25,6 +25,7 @@ encountered in practice.
 | 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, OpenAI |
 | 10 | Retail | Dunning Management with Admin Overview | Schedule Trigger, Google Calendar, n8n Data Table, Aggregate, Merge, Gmail, Google Tasks |
 | 11 | Retail | AI Customer Inquiry Routing | n8n Webhook, Crypto, n8n Data Table, Basic LLM Chain, Groq Chat Model, Set, Gmail |
+| 11b | Retail | Categorization Eval Suite (for 11) | Manual Trigger, n8n Data Table, Basic LLM Chain, Groq Chat Model |
 
 ## Cross-Domain: Compliance & Error Handling
 

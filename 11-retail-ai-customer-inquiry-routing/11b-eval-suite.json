@@ -1,0 +1,128 @@
+{
+  "name": "11b - Kategorisierungs Eval Suite",
+  "nodes": [
+    {
+      "id": "trigger1",
+      "name": "Manueller Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "parameters": {}
+    },
+    {
+      "id": "dt1",
+      "name": "Testfälle laden",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [240, 0],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-eval-cases-datatable-id" },
+        "matchType": "anyCondition",
+        "filters": { "conditions": [] },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "llmchain1",
+      "name": "Kategorisieren",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [464, 0],
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.nachricht }}",
+        "messages": {
+          "messageValues": [
+            { "message": "Du kategorisierst eingehende Kundenanfragen fuer einen Handwerksbetrieb. Antworte ausschliesslich mit genau einem der folgenden Woerter, ohne Anfuehrungszeichen, ohne weiteren Text: Angebot, Terminanfrage, Reklamation, Sonstiges." }
+          ]
+        },
+        "batching": {}
+      }
+    },
+    {
+      "id": "groqmodel1",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [464, 176],
+      "parameters": { "model": "openai/gpt-oss-20b", "options": {} },
+      "credentials": {
+        "groqApi": { "id": "your-groq-credential-id", "name": "Groq account" }
+      }
+    },
+    {
+      "id": "set1",
+      "name": "Ergebnis auswerten",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [688, 0],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            { "id": "e1", "name": "id", "type": "number", "value": "={{ $('Testfälle laden').item.json.id }}" },
+            { "id": "e2", "name": "modell_antwort", "type": "string", "value": "={{ $json.text.trim() }}" },
+            { "id": "e3", "name": "korrekt", "type": "boolean", "value": "={{ $json.text.trim() === $('Testfälle laden').item.json.erwartete_kategorie }}" }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "dt2",
+      "name": "Ergebnis speichern",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [912, 0],
+      "parameters": {
+        "operation": "update",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-eval-cases-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "id", "keyValue": "={{ $json.id }}" }] },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "modell_antwort": "={{ $json.modell_antwort }}",
+            "korrekt": "={{ $json.korrekt }}",
+            "status": "verarbeitet"
+          }
+        }
+      }
+    },
+    {
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -400],
+      "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Misst, wie gut die Vier-Kategorien-Klassifizierung aus Workflow 11 tatsächlich funktioniert, statt es anzunehmen. Analog zu Eval Suite 09b: gelabelte Testfälle werden mit demselben Prompt/Modell wie in Produktion klassifiziert, das Ergebnis automatisch mit der erwarteten Kategorie verglichen und zurückgeschrieben.\n\n**1. Manueller Start:** Kein Schedule — bewusst manuell ausgelöst\n**2. Testfälle laden (Data Table):** 25 gelabelte Nachrichten über alle vier Kategorien, inkl. bewusst schwieriger Fälle (mehrdeutige Formulierungen, sehr kurze Nachricht, Emoji-only)\n**3. Kategorisieren + Groq Chat Model:** Identischer Prompt und identisches Modell wie Workflow 11 (openai/gpt-oss-20b)\n**4. Ergebnis auswerten (Set):** Vergleicht Modell-Antwort mit erwarteter Kategorie\n**5. Ergebnis speichern (Data Table):** Schreibt modell_antwort, korrekt und status pro Testfall zurück\n\n**Baseline-Ergebnis (v1):** 25/25 korrekt = 100%, gemessen mit openai/gpt-oss-20b über Groq. Auch alle fünf bewusst schwierigen Fälle (Preisnachverhandlung als Angebot, verpasster Termin als neue Terminanfrage statt Reklamation, sehr kurze Nachricht, Emoji-only, Rechnungsreklamation trotz Preisbezug) wurden korrekt eingeordnet.\n\n**Einordnung:** Im Unterschied zu Eval Suite 09b (92%, mit dokumentierten Fehlklassifikationen) gab es hier keine Fehler. Das kann bedeuten, dass die Vier-Kategorien-Aufgabe für dieses Modell einfacher ist als 3-Klassen-Sentiment mit Ironie-Erkennung — oder dass das Testset noch nicht hart genug ist. Geplante nächste Iteration: Testfälle mit noch stärker überlappenden Kategorien (z.B. eine Anfrage, die gleichzeitig Reklamation und neue Terminanfrage ist).",
+        "height": 480,
+        "width": 1000,
+        "color": 4
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manueller Start": { "main": [[{ "node": "Testfälle laden", "type": "main", "index": 0 }]] },
+    "Testfälle laden": { "main": [[{ "node": "Kategorisieren", "type": "main", "index": 0 }]] },
+    "Kategorisieren": { "main": [[{ "node": "Ergebnis auswerten", "type": "main", "index": 0 }]] },
+    "Groq Chat Model": { "ai_languageModel": [[{ "node": "Kategorisieren", "type": "ai_languageModel", "index": 0 }]] },
+    "Ergebnis auswerten": { "main": [[{ "node": "Ergebnis speichern", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}
