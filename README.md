@@ -1,16 +1,12 @@
 # n8n-Automation-Portfolio
-n8n workflow automations across 6 domains — public administration, education, retail, hospitality management and AI
+n8n workflow automations covering real business processes — plus reusable compliance and error-handling patterns that apply across all of them
 
 ## About me
 I'm a career changer with a background spanning public administration, 
 employment services, retail management, education (M.Ed.) and hospitality. 
-This diverse experience shapes how I think about automation — I understand 
-the real processes behind the workflows I build.
-
-## Why 6 domains?
-Each workflow reflects a domain I've worked in professionally. 
-This is not a generic tutorial portfolio — every automation solves 
-a problem I've encountered in practice.
+Each workflow in this portfolio reflects one of those domains — this is not 
+a generic tutorial portfolio, every automation solves a problem I've 
+encountered in practice.
 
 ## Workflows
 
@@ -40,7 +36,7 @@ Workflows that don't belong to one specific domain — they sit underneath or al
 | 13 | Compliance & Error Handling | Central Error Handler with Audit Log | n8n Error Trigger, n8n Data Table |
 | 14a/14b | Compliance & Error Handling | Error Handling Main/Sub Pattern | Schedule Trigger, Set, Stop and Error, Error Trigger |
 
-**Note on error handling:** Error handling is implemented exemplarily in workflows 05, 07 and the 09 eval suite (09b)
-(Continue-on-error with dedicated error notification emails). The remaining workflows focus on core 
-process logic — a deliberate scope decision for this portfolio. Error workflows are covered in depth 
-in n8n Course Level 2 (certified: [community.n8n.io/u/guel](https://community.n8n.io/u/guel)).
+**Note on error handling:** Workflows 13 and 14 cover error handling in depth — a central audit-log 
+handler (13) and an alternative Main/Sub extraction pattern (14). Workflows 05, 07 and the 09 eval 
+suite (09b) additionally implement inline continue-on-error handling with dedicated notification 
+emails for that specific use case.
