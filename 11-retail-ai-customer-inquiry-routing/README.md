@@ -6,7 +6,7 @@ Automatically categorizes incoming customer inquiries for a craft/trade business
 ## Workflow
 Webhook (Form Submission) → Normalize Fields → Request-ID (Hash, Crypto) → Duplicate Check (Data Table, `rowNotExists`) → AI Categorization (Groq / Basic LLM Chain) → Category Fallback (Set Node) → Target Address Mapping → Gmail (Internal Notification) + Audit Log (Data Table) → Dedupe Key Saved
 
-<img width="1151" height="564" alt="image" src="https://github.com/user-attachments/assets/3c3f74ac-39d5-41b4-8adf-282aba720835" />
+<img width="791" height="633" alt="image" src="https://github.com/user-attachments/assets/b3f2e87f-5a0b-48f8-8976-ba1b6af1872a" />
 
 ## How it was built
 - **Webhook** receives POST requests simulating the website contact form (name, email, message, source) — designed to later also accept real inbound email as an additional trigger
