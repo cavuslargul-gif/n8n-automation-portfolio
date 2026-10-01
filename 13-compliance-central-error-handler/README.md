@@ -6,7 +6,7 @@ A single, reusable error handler shared across the entire portfolio of admin wor
 ## Workflow
 Error Trigger → Write to Error Log (Data Table)
 
-<!-- Canvas screenshot goes here -->
+<img width="483" height="678" alt="image" src="https://github.com/user-attachments/assets/0acdd036-c8db-4d5d-a3f2-825ec5f25b82" />
 
 ## How it was built
 - **Error Trigger** is n8n's built-in trigger that fires automatically whenever a workflow configured to use this one as its "Error Workflow" fails — no manual wiring inside the failing workflow itself beyond that one settings field
@@ -19,8 +19,6 @@ Error Trigger → Write to Error Log (Data Table)
 4. The failed workflow's own downstream logic (digest emails, task creation, etc.) is unaffected — it simply stops at the point of failure while this workflow independently records what happened
 
 ## Nodes & Tools
-
-<!-- Node list screenshot goes here -->
 
 - n8n Error Trigger
 - n8n Data Table
