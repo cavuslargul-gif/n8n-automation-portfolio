@@ -3,6 +3,19 @@
   "nodes": [
     {
       "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Test-Harness zur gezielten Fehlersimulation — erzeugt zuverlässig und wiederholbar einen Fehler, um das Main/Sub-Error-Handling-Pattern zu demonstrieren und zu verifizieren, ohne auf einen echten Produktionsfehler warten zu müssen.\n\n**1. Run Every 5 Minutes (Schedule Trigger):** Startet alle 5 Minuten\n**2. Mock Order (Set):** Baut einen Fake-Datensatz (customer_id, action, amount)\n**3. Simulate Failure (Stop and Error):** Bricht bewusst mit fester Fehlermeldung ab (\"Payment processing failed: gateway timeout\")\n\n**Einbindung:** Hat Errorhandeling_Workflow_Sub als Error Workflow eingetragen — jeder simulierte Fehler löst dort automatisch den Error Trigger aus.",
+        "height": 400,
+        "width": 800,
+        "color": 4
+      },
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -320]
+    },
+    {
+      "parameters": {
         "assignments": {
           "assignments": [
             { "id": "f001", "name": "customer_id", "type": "string", "value": "12345" },

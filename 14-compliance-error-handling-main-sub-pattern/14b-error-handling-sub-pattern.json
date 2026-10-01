@@ -2,6 +2,19 @@
   "name": "14b - Error Handling Sub-Pattern",
   "nodes": [
     {
+      "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Wiederverwendbarer Sub-Workflow, der bei jedem Fehler nur die relevanten Informationen aus dem n8n-Fehlerobjekt extrahiert — getrennt von der eigentlichen Weiterverarbeitung (Logging, Benachrichtigung, Retry etc.).\n\n**1. Error Trigger:** Wird automatisch ausgelöst, sobald ein Workflow fehlschlägt, der diesen hier als Error Workflow eingetragen hat\n**2. Extract Error Info (Set):** Liest error_message, failed_workflow und last_node aus dem Fehlerobjekt in ein flaches, leicht weiterverarbeitbares Format\n\n**Unterschied zu Tamplate_Error-Handler (Audit-Log):** Dort landet der Fehler direkt in einer Datentabelle. Hier wird die Extraktion bewusst von der Weiterverarbeitung getrennt — die extrahierten Felder könnten genauso gut an eine Benachrichtigung, ein Ticket-System oder einen Retry-Mechanismus weitergereicht werden.",
+        "height": 400,
+        "width": 800,
+        "color": 4
+      },
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -320]
+    },
+    {
       "parameters": {},
       "type": "n8n-nodes-base.errorTrigger",
       "typeVersion": 1,

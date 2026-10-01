@@ -2,6 +2,19 @@
   "name": "13 - Central Error Handler with Audit Log",
   "nodes": [
     {
+      "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Zentraler Error-Handler für alle Tamplate_admin_*-Workflows. Wird über die Workflow-Einstellung „Error Workflow\" automatisch von anderen Workflows aufgerufen, sobald dort ein unbehandelter Fehler auftritt. Schreibt jeden Fehler strukturiert in ein zentrales Audit-Log, ohne dass der fehlerhafte Workflow selbst eigene Fehlerbehandlungs-Logik enthalten muss.\n\n**1. Fehler-Trigger (Error Trigger):** Wird automatisch von n8n ausgelöst, sobald ein Workflow fehlschlägt, der diesen hier als Error Workflow eingetragen hat. Liefert den vollständigen Fehlerkontext (Workflow, Node, Meldung, Execution-ID).\n\n**2. Fehler-Log schreiben (Data Table):** Schreibt eine Zeile pro Fehler in workflow_error_log: Zeitstempel, Workflow-Name, fehlgeschlagener Node, Fehlermeldung, Execution-ID.\n\n**Einbindung:** Wird in den Settings → Error Workflow der anderen Workflows (z. B. Mahnwesen, Kundenanfrage-Routing, admin_übersicht) referenziert — keine manuelle Verdrahtung im jeweiligen Workflow nötig.\n\n**Nachvollziehbarkeit:** Die workflow_error_log-Tabelle wird auch von der Tagesübersicht (Tamplate_admin_übersicht) ausgelesen — offene Fehler tauchen so automatisch im regulären Admin-Digest auf, statt nur in der n8n-internen Execution-Historie zu verschwinden.",
+        "height": 480,
+        "width": 900,
+        "color": 4
+      },
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -320]
+    },
+    {
       "parameters": {},
       "id": "errtrig1",
       "name": "Fehler-Trigger",
