@@ -29,7 +29,7 @@
         "responseType": "customForm",
         "defineForm": "json",
         "jsonOutput": "[\n  {\n    \"fieldLabel\": \"Freigabe\",\n    \"fieldType\": \"dropdown\",\n    \"fieldOptions\": {\"values\": [{\"option\": \"Freigeben\"}, {\"option\": \"Zurückstellen\"}]},\n    \"requiredField\": true\n  },\n  {\n    \"fieldLabel\": \"Entscheidende Instanz\",\n    \"placeholder\": \"Name der prüfenden Person\",\n    \"requiredField\": true\n  },\n  {\n    \"fieldLabel\": \"Begründung\",\n    \"fieldType\": \"textarea\",\n    \"placeholder\": \"Optional, besonders bei Zurückstellen\"\n  }\n]",
-        "options": {}
+        "options": { "limitWaitTime": { "values": { "limitType": "afterTimeInterval", "resumeAmount": 7, "resumeUnit": "days" } } }
       },
       "id": "gmail1",
       "name": "Freigabe anfragen",
@@ -62,6 +62,57 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [672, 96]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "leftValue": "={{ $json.data?.Freigabe }}", "operator": { "type": "string", "operation": "notEmpty" }, "rightValue": "" }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "if2",
+      "name": "Antwort erhalten?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [672, 240]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            { "id": "v1", "name": "vertretung_email", "type": "string", "value": "vertretung@beispielbetrieb.de" }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "set1",
+      "name": "Vertretung",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [896, 384]
+    },
+    {
+      "parameters": {
+        "sendTo": "kunde@beispielbetrieb.de",
+        "subject": "=Erinnerung: Freigabe Mahnung ausstehend - {{ $('Offene Posten abrufen').item.json.rechnungsnummer }} - {{ $('Offene Posten abrufen').item.json.kunde }}",
+        "emailType": "text",
+        "message": "=Seit 7 Tagen liegt keine Rückmeldung zur Freigabe-Anfrage für Rechnung {{ $('Offene Posten abrufen').item.json.rechnungsnummer }} ({{ $('Offene Posten abrufen').item.json.kunde }}, {{ $('Offene Posten abrufen').item.json.betrag }} EUR) vor.\n\nBitte zeitnah entscheiden: Freigeben oder Zurückstellen.\n\nDer Status bleibt bis zur Entscheidung auf 'offen' - weder Mahnung noch Zurückstellung wurden gebucht.",
+        "options": { "ccList": "={{ $json.vertretung_email }}" }
+      },
+      "id": "gmail3",
+      "name": "Erinnerung senden",
+      "webhookId": "your-webhook-id",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [1120, 384],
+      "credentials": {
+        "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" }
+      }
     },
     {
       "parameters": {
@@ -154,22 +205,29 @@
     },
     {
       "parameters": {
-        "content": "## Use-Case & Nodes\n\n**Use Case:** Tägliche Prüfung auf fällige offene Posten. Vor jedem Mahnversand entscheidet ein Mensch per Formular-Mail, ob freigegeben oder zurückgestellt wird. Dabei werden Name der entscheidenden Person und Begründung hinterlegt. Keine Mahnung geht automatisch raus, immer erst nach Freigabe. Nachvollziehbarkeit gilt für beide Ausgänge, da auch eine freigegebene Mahnung sich im Nachhinein als Fehlentscheidung herausstellen kann.\n\n**1. Täglich prüfen (Schedule Trigger):** Läuft täglich um 9:00 Uhr\n**2. Offene Posten abrufen (Data Table):** Holt Zeilen aus offene_posten mit status=offen, fälligkeitsdatum <= heute\n**3. Freigabe anfragen (Gmail Send and Wait, Custom Form):** Human-in-the-Loop — ein Formular mit drei Feldern: Dropdown \"Freigabe\" (Freigeben/Zurückstellen, Pflicht), \"Entscheidende Instanz\" (Name, Pflicht), \"Begründung\" (Freitext, optional). Workflow pausiert bis zur Antwort.\n**4. Freigegeben? (If):** Prüft das Dropdown-Ergebnis\n\n5a. **Ja (Freigeben)** → Mahnung senden (Gmail) an den Kunden + Status: gemahnt setzen (inkl. entschieden_von und begruendung)\n5b. **Nein (Zurückstellen)** → nur Status: zurückgestellt setzen (inkl. entschieden_von und begruendung), keine Kundenmail\n\n**Fallback:** Kein Eintrag fällig/offen → Data-Table-Abfrage liefert 0 Zeilen, nachfolgende Nodes laufen einfach nicht, kein Fehler.\n\n**Wichtig für Produktion:** Aktuell laufen Freigabe-Anfrage (interne Abteilung) und Mahnung (Kunde) testweise an dieselbe Adresse, damit beide Mails in einer Instanz sichtbar sind. In Produktion sind das zwei getrennte Adressen. Die interne Abteilung, die freigibt, und der Kunde, der die Mahnung bekommt.\n\n**Error-Handling:** Workflow an den zentralen Error-Handler-Workflow gekoppelt (Settings → Error Workflow). Landet in workflow_error_log. \n**Kontrolle** \"Mahnung nur nach Freigabe\": strukturell erzwungen. Der Mahnung-senden-Node hängt ausschließlich am Ja-Zweig des Freigabe-Formulars, es gibt keinen Pfad, der ihn umgeht.\n\n**Audit-Trail:** offene_posten hat zwei zusätzliche Spalten (entschieden_von, begruendung), die bei jeder Entscheidung — Freigabe oder Zurückstellung — mitgeschrieben werden.\n\n",
-        "height": 624,
-        "width": 1392,
+        "content": "# Use-Case & Nodes\n\n\n## **Use Case:** \nTägliche Prüfung auf fällige offene Posten. Vor jedem Mahnversand entscheidet ein Mensch per Formular-Mail, ob freigegeben oder zurückgestellt wird. Dabei werden Name der entscheidenden Person und Begründung hinterlegt. Keine Mahnung geht automatisch raus, immer erst nach Freigabe. Nachvollziehbarkeit gilt für beide Ausgänge, da auch eine freigegebene Mahnung sich im Nachhinein als Fehlentscheidung herausstellen kann.\n\n\n## **Workflow & Nodes**\n\n**1. Täglich prüfen (Schedule Trigger):** Läuft täglich um 9:00 Uhr\n**2. Offene Posten abrufen (Data Table):** Holt Zeilen aus offene_posten mit status=offen, fälligkeitsdatum <= heute\n**3. Freigabe anfragen (Gmail Send and Wait, Custom Form):** Human-in-the-Loop — ein Formular mit drei Feldern: Dropdown \"Freigabe\" (Freigeben/Zurückstellen, Pflicht), \"Entscheidende Instanz\" (Name, Pflicht), \"Begründung\" (Freitext, optional). Workflow pausiert bis zur Antwort, maximal 7 Tage (Limit Wait Time).\n**4. Antwort erhalten? (If):** Prüft ob echte Formulardaten vorliegen oder der 7-Tage-Timeout gegriffen hat\n\n4a. **Nein (Timeout)** → Vertretung (Set, Platzhalter-Adresse) → Erinnerung senden (Gmail) an die ursprüngliche Stelle, CC an Vertretung. Keine Status-Änderung — der Posten bleibt bewusst \"offen\", da sowohl Freigabe als auch Zurückstellung weiterhin möglich bleiben sollen.\n\n4b. **Ja** → weiter zu Freigegeben? (If): prüft das Dropdown-Ergebnis\n\n5a. **Freigeben** → Mahnung senden (Gmail) an den Kunden + Status: gemahnt setzen (inkl. entschieden_von und begruendung)\n5b. **Zurückstellen** → nur Status: zurückgestellt setzen (inkl. entschieden_von und begruendung), keine Kundenmail\n\n\n## **Fallback:** \nKein Eintrag fällig/offen → Data-Table-Abfrage liefert 0 Zeilen, nachfolgende Nodes laufen einfach nicht, kein Fehler.\n\n\n## **Wichtig für Produktion:** \nAktuell laufen Freigabe-Anfrage (interne Abteilung), Erinnerung und Mahnung (Kunde) testweise an dieselbe Adresse, damit alle Mails in einer Instanz sichtbar sind. In Produktion sind das getrennte Adressen. Die interne Abteilung, die freigibt, die Vertretung, und der Kunde, der die Mahnung bekommt.\n\n\n## **Error-Handling:** \nWorkflow an den zentralen Error-Handler-Workflow gekoppelt (Settings → Error Workflow). Landet in workflow_error_log. \n**Kontrolle** \"Mahnung nur nach Freigabe\": strukturell erzwungen. Der Mahnung-senden-Node hängt ausschließlich am Ja-Zweig des Freigabe-Formulars, es gibt keinen Pfad, der ihn umgeht.\n\n\n## **Audit-Trail:**\nOffene_posten hat zwei zusätzliche Spalten (entschieden_von, begruendung), die bei jeder Entscheidung — Freigabe oder Zurückstellung — mitgeschrieben werden. Die Timeout-Eskalation selbst ist keine Entscheidung und wird daher nicht in diesen Spalten erfasst, sondern nur über den Mailversand sichtbar.\n\n",
+        "height": 1024,
+        "width": 960,
         "color": 4
       },
       "id": "sticky1",
       "name": "Sticky Note",
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
-      "position": [-80, -672]
+      "position": [-1040, -416]
     }
   ],
   "pinData": {},
   "connections": {
     "Offene Posten abrufen": { "main": [[{ "node": "Freigabe anfragen", "type": "main", "index": 0 }]] },
-    "Freigabe anfragen": { "main": [[{ "node": "Freigegeben?", "type": "main", "index": 0 }]] },
+    "Freigabe anfragen": { "main": [[{ "node": "Antwort erhalten?", "type": "main", "index": 0 }]] },
+    "Antwort erhalten?": {
+      "main": [
+        [{ "node": "Freigegeben?", "type": "main", "index": 0 }],
+        [{ "node": "Vertretung", "type": "main", "index": 0 }]
+      ]
+    },
+    "Vertretung": { "main": [[{ "node": "Erinnerung senden", "type": "main", "index": 0 }]] },
     "Freigegeben?": {
       "main": [
         [{ "node": "Mahnung senden", "type": "main", "index": 0 }],
