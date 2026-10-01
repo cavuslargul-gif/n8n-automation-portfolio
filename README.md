@@ -41,3 +41,10 @@ Workflows that don't belong to one specific domain — they sit underneath or al
 handler (13) and an alternative Main/Sub extraction pattern (14). Workflows 05, 07 and the 09 eval 
 suite (09b) additionally implement inline continue-on-error handling with dedicated notification 
 emails for that specific use case.
+
+## Methodology: Worksheets & Checklists
+
+The [`worksheets/`](worksheets) folder holds the methodology behind these workflows — project 
+lifecycle, AI-node error handling, logging/observability architecture, and rollout checklists, 
+written up as standalone, reusable reference documents rather than left implicit in the workflow 
+JSONs.
