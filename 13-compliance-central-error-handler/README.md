@@ -6,7 +6,10 @@ A single, reusable error handler shared across the entire portfolio of admin wor
 ## Workflow
 Error Trigger → Write to Error Log (Data Table)
 
-<img width="436" height="643" alt="image" src="https://github.com/user-attachments/assets/51961bca-d69b-4079-97f6-4a2f74d8637e" />
+<p align="center"> 
+<img width="331" height="486" alt="image" src="https://github.com/user-attachments/assets/8db51d97-5798-427c-ae8c-3896b6bf1985" />
+</p>
+
 
 ## How it was built
 - **Error Trigger** is n8n's built-in trigger that fires automatically whenever a workflow configured to use this one as its "Error Workflow" fails — no manual wiring inside the failing workflow itself beyond that one settings field
@@ -31,7 +34,9 @@ Centralizing error handling this way means every admin workflow gets consistent,
 
 A separate workflow (`13b-error-handler-replay.json`) extends this log into an actual dead-letter queue: it reads every row where `status = offen`, re-runs the originally-failed workflow by `workflow_id`, and marks the row `wiederholt` with an incremented `retry_count` on success. A failed replay attempt is caught (not silently dropped) and leaves the row open for the next run.
 
-<img width="906" height="579" alt="image" src="https://github.com/user-attachments/assets/b6faf150-1c85-4b3b-83b6-2dd1b86f08e5" />
+<p align="center">
+<img width="716" height="504" alt="image" src="https://github.com/user-attachments/assets/0eba8f26-496d-4f29-850b-2f80d4135fbc" />
+<p/>
 
 **Verified, not just built:**
 - A row with an empty/invalid `workflow_id` (e.g. an older log entry from before this column existed, or a since-deleted target workflow) is caught by the Execute Workflow node's error branch instead of crashing the whole replay run — tested directly with a known-bad payload.
