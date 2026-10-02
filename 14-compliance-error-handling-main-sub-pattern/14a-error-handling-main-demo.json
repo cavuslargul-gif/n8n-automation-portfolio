@@ -3,8 +3,8 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Use-Case & Nodes\n\n**Use Case:** Test-Harness zur gezielten Fehlersimulation — erzeugt zuverlässig und wiederholbar einen Fehler, um das Main/Sub-Error-Handling-Pattern zu demonstrieren und zu verifizieren, ohne auf einen echten Produktionsfehler warten zu müssen.\n\n**1. Run Every 5 Minutes (Schedule Trigger):** Startet alle 5 Minuten\n**2. Mock Order (Set):** Baut einen Fake-Datensatz (customer_id, action, amount)\n**3. Simulate Failure (Stop and Error):** Bricht bewusst mit fester Fehlermeldung ab (\"Payment processing failed: gateway timeout\")\n\n**Einbindung:** Hat Errorhandeling_Workflow_Sub als Error Workflow eingetragen — jeder simulierte Fehler löst dort automatisch den Error Trigger aus.",
-        "height": 400,
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Test-Harness zur gezielten Fehlersimulation — erzeugt zuverlässig und wiederholbar einen Fehler, um das Main/Sub-Error-Handling-Pattern zu demonstrieren und zu verifizieren, ohne auf einen echten Produktionsfehler warten zu müssen.\n\n**1. Run Every 5 Minutes (Schedule Trigger):** Startet alle 5 Minuten\n**2. Mock Order (Set):** Baut einen Fake-Datensatz (customer_id, action, amount)\n**3. Payload gültig? (IF):** Prüft customer_id (vorhanden) und amount (numerisch) — Known-bad-payload-Pfad\n**4. Simulate Failure (Stop and Error):** Gültiges Payload → feste Fehlermeldung (\"Payment processing failed: gateway timeout\")\n**5. Simulate Failure (Malformed Payload):** Ungültiges Payload → eigene, unterscheidbare Fehlermeldung (\"Invalid order payload: missing customer_id or non-numeric amount\")\n\n**Einbindung:** Hat Errorhandeling_Workflow_Sub als Error Workflow eingetragen — jeder simulierte Fehler löst dort automatisch den Error Trigger aus.\n\n**Gefixt und verifiziert:** Die Error-Workflow-Kopplung zu Sub war in den Live-Settings tatsächlich nicht gesetzt, obwohl hier dokumentiert — n8n verweigerte das Setzen sogar, bis Sub zuerst publiziert war. Danach real gegen beide Pfade getestet: gültiges Payload → Gateway-Timeout-Fehler, korrekt in Sub extrahiert; manipuliertes Mock Order (leere customer_id, amount als String) → eigene Fehlermeldung, ebenfalls korrekt mit richtigem Node-Namen in Sub extrahiert.",
+        "height": 512,
         "width": 800,
         "color": 4
       },
@@ -35,9 +35,34 @@
       "parameters": { "errorMessage": "Payment processing failed: gateway timeout" },
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
-      "position": [464, 0],
+      "position": [688, 0],
       "id": "stoperror1",
       "name": "Simulate Failure"
+    },
+    {
+      "parameters": { "errorMessage": "Invalid order payload: missing customer_id or non-numeric amount" },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [688, 160],
+      "id": "stoperror2",
+      "name": "Simulate Failure (Malformed Payload)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "leftValue": "={{ typeof $json.customer_id === 'string' && $json.customer_id.length > 0 }}", "rightValue": true, "operator": { "type": "boolean", "operation": "equals" } },
+            { "leftValue": "={{ typeof $json.amount === 'number' && !isNaN($json.amount) }}", "rightValue": true, "operator": { "type": "boolean", "operation": "equals" } }
+          ],
+          "combinator": "and"
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [464, 0],
+      "id": "if1",
+      "name": "Payload gültig?"
     },
     {
       "parameters": { "rule": { "interval": [{ "field": "minutes" }] } },
@@ -50,14 +75,21 @@
   ],
   "pinData": {},
   "connections": {
-    "Mock Order": { "main": [[{ "node": "Simulate Failure", "type": "main", "index": 0 }]] },
+    "Mock Order": { "main": [[{ "node": "Payload gültig?", "type": "main", "index": 0 }]] },
+    "Payload gültig?": {
+      "main": [
+        [{ "node": "Simulate Failure", "type": "main", "index": 0 }],
+        [{ "node": "Simulate Failure (Malformed Payload)", "type": "main", "index": 0 }]
+      ]
+    },
     "Run Every 5 Minutes": { "main": [[{ "node": "Mock Order", "type": "main", "index": 0 }]] }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "errorWorkflow": "your-sub-workflow-id"
   },
   "versionId": "placeholder",
   "meta": {
