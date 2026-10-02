@@ -70,7 +70,7 @@
       ],
       "id": "c38669a1-7779-446f-8c91-dae496aad5c4",
       "name": "Antragstellung (Application Submission)",
-      "webhookId": "9477ceda-2c5b-4051-8d83-ef3723c66b21"
+      "webhookId": "your-webhook-id"
     },
     {
       "parameters": {
@@ -165,7 +165,7 @@
       "name": "Erfassung auf Google Sheets (Record to Google Sheets)",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "X78L7uHBLlRDfksB",
+          "id": "your-google-sheets-credential-id",
           "name": "Google Sheets OAuth2 API"
         }
       }
@@ -186,10 +186,10 @@
       ],
       "id": "9525c927-f291-478c-be7a-e351eda5c12b",
       "name": "Antragsbestätigung via E-Mail (MailConfirmation Email)",
-      "webhookId": "a6d40298-c50b-4cb3-a951-4b54c4368730",
+      "webhookId": "your-webhook-id",
       "credentials": {
         "gmailOAuth2": {
-          "id": "6Ma0zqj54VErcxJp",
+          "id": "your-gmail-o-auth2-credential-id",
           "name": "Gmail OAuth2 API"
         }
       }
@@ -225,12 +225,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "091242cf-8b6d-43b7-a66f-4af9a69dc34d",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "f9qayNMOIvWzfhuq",
+  "id": "your-workflow-id",
   "tags": []
 }

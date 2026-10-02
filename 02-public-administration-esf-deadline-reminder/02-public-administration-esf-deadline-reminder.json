@@ -40,17 +40,17 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1xCWPup6wn5YjqoTf7XxUgN6wF51HTXzIIN8VufML4p4",
+          "value": "your-spreadsheet-id",
           "mode": "list",
           "cachedResultName": "ESF-Berichte",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xCWPup6wn5YjqoTf7XxUgN6wF51HTXzIIN8VufML4p4/edit?usp=drivesdk"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "ESF-Berichte",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xCWPup6wn5YjqoTf7XxUgN6wF51HTXzIIN8VufML4p4/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/your-spreadsheet-id/edit#gid=0"
         },
         "options": {}
       },
@@ -64,7 +64,7 @@
       "name": "Teilnehmendenliste",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "4eQIu3Y5wP5nImLi",
+          "id": "your-google-sheets-credential-id",
           "name": "Google Sheets OAuth2 API"
         }
       }
@@ -119,10 +119,10 @@
       ],
       "id": "275557a8-13be-4ab6-90bc-233431d76d2d",
       "name": "Erinnerungsbenachrichtigung (reminder email)",
-      "webhookId": "9fd377e6-46ac-48fd-a828-b22670ca0e83",
+      "webhookId": "your-webhook-id",
       "credentials": {
         "gmailOAuth2": {
-          "id": "OhwuQqv2tQ2kMtMR",
+          "id": "your-gmail-o-auth2-credential-id",
           "name": "Gmail OAuth2 API"
         }
       }
@@ -169,12 +169,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "146fb3b4-f28c-4f4c-811e-c0f06b4a49ef",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "neblDqatKlvMHY9O",
+  "id": "your-workflow-id",
   "tags": []
 }

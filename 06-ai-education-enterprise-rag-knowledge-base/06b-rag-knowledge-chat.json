@@ -44,7 +44,7 @@
       ],
       "id": "7ade340e-4b2f-4a5c-9b13-62d0806372b8",
       "name": "Fragen stellen (Receive User Question)",
-      "webhookId": "94e47ada-0c50-4890-87dc-612ce4e8bc85"
+      "webhookId": "your-webhook-id"
     },
     {
       "parameters": {
@@ -66,7 +66,7 @@
       "name": "Sprachmodell GPT-5 (GPT-5 Language Model)",
       "credentials": {
         "openAiApi": {
-          "id": "8jk78syRVzqvpIsC",
+          "id": "your-open-ai-credential-id",
           "name": "n8n free OpenAI API credits"
         }
       }
@@ -85,7 +85,7 @@
       "name": "Text zu Vektoren (Generate Embeddings)",
       "credentials": {
         "openAiApi": {
-          "id": "8jk78syRVzqvpIsC",
+          "id": "your-open-ai-credential-id",
           "name": "n8n free OpenAI API credits"
         }
       }
@@ -111,7 +111,7 @@
       "name": "Wissensdatenbank durchsuchen\t(Search Knowledge Base)",
       "credentials": {
         "qdrantApi": {
-          "id": "hvfBuVt3GVHZWmEu",
+          "id": "your-qdrant-credential-id",
           "name": "Qdrant account"
         }
       }
@@ -170,12 +170,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "56128ad7-e488-4d1a-affd-fe147ac749e6",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "rfAdaIgBKQgiqGpP",
+  "id": "your-workflow-id",
   "tags": []
 }

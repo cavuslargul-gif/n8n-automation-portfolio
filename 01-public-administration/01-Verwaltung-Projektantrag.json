@@ -58,7 +58,7 @@
       ],
       "id": "0d7c7ab9-8d0d-4a08-a11e-90660b08c296",
       "name": "Projektantrag ( Project Request Form)",
-      "webhookId": "18cb6c62-f92c-49f7-9fea-2cd5ded95112"
+      "webhookId": "your-webhook-id"
     },
     {
       "parameters": {
@@ -144,7 +144,7 @@
       "name": "Erfassung Projektdaten (Project Records)",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "4eQIu3Y5wP5nImLi",
+          "id": "your-google-sheets-credential-id",
           "name": "Google Sheets OAuth2 API"
         }
       }
@@ -165,10 +165,10 @@
       ],
       "id": "6ad490ee-a123-481e-bbcc-bed04e76c3d8",
       "name": "Antragsbestätigung via E-Mail (Confirmation Email)",
-      "webhookId": "dd2cc8f5-e9b3-4744-a55e-a3358b5ff0e8",
+      "webhookId": "your-webhook-id",
       "credentials": {
         "gmailOAuth2": {
-          "id": "OhwuQqv2tQ2kMtMR",
+          "id": "your-gmail-o-auth2-credential-id",
           "name": "Gmail OAuth2 API"
         }
       }
@@ -204,12 +204,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "91504064-530e-48ca-ab69-a325106f606e",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "eQbPkKW7kYImVmsl",
+  "id": "your-workflow-id",
   "tags": []
 }

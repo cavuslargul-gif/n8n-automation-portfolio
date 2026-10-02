@@ -62,7 +62,7 @@
       ],
       "id": "5e0acd11-a053-4a60-8a1e-9be764edbf32",
       "name": "Wissensmanagement — Dokument einpflegen (Knowledge Intake Form)",
-      "webhookId": "0b4e839b-1737-4b34-a7cf-45cb9b1b71de"
+      "webhookId": "your-webhook-id"
     },
     {
       "parameters": {
@@ -78,7 +78,7 @@
       "name": "Text zu Vektoren (Generate Embeddings)",
       "credentials": {
         "openAiApi": {
-          "id": "8jk78syRVzqvpIsC",
+          "id": "your-open-ai-credential-id",
           "name": "n8n free OpenAI API credits"
         }
       }
@@ -116,7 +116,7 @@
       "name": "Wissen speichern (Store to Vector DB)",
       "credentials": {
         "qdrantApi": {
-          "id": "hvfBuVt3GVHZWmEu",
+          "id": "your-qdrant-credential-id",
           "name": "Qdrant account"
         }
       }
@@ -164,12 +164,11 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "c281605b-6ebb-45c7-b6f9-2bbf2f460a73",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "UNyLL4ltAlzZd18K",
+  "id": "your-workflow-id",
   "tags": []
 }
