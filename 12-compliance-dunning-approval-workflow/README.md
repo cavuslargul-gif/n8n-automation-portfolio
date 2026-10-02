@@ -31,6 +31,8 @@ Schedule Trigger (daily 9:00) → Fetch Overdue Invoices (Data Table) → Approv
 
 **Escalation note:** The timeout path intentionally does not force a decision or pick a default — it only makes the open decision more visible. Who exactly counts as "the deputy" depends on the organization; in practice this is typically the accountant/bookkeeper's substitute. The reminder is a nudge, not an auto-approval or auto-deferral.
 
+**Known limitation:** This is a schedule-triggered workflow coupled to the central error handler (13), not a fallback-based one — an unhandled failure here (e.g. the approval email failing to send) is logged, and workflow 13b can replay it by re-triggering the run. Since the next run re-queries open dunning cases fresh rather than depending on stored request data, that replay is meaningful here, unlike for webhook-triggered workflow 11.
+
 ## Nodes & Tools
 
 - n8n Schedule Trigger

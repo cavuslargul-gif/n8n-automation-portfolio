@@ -27,6 +27,8 @@ Two independent chains in the same workflow — Daily (7:00) and Weekly (Monday,
 
 **Note:** The duplicate-protection logic (`task_erstellt` flag) was added after testing surfaced that the daily run created a new task every day for the same already-deferred case — the original filter only checked status, with no time or processing window.
 
+**Known limitation:** Error-handling (unhandled exceptions, routed to workflow 13) and this workflow's own fallback logic (e.g. showing "None" instead of breaking when a list is empty) are two different layers — the fallback keeps a run from crashing on expected edge cases, error-handling catches what the fallback doesn't cover. Replay (workflow 13b) only applies to the latter, and even there it re-triggers this workflow rather than reprocessing a specific failed payload — meaningful here since this workflow re-queries Google Calendar and the data tables fresh on every run anyway.
+
 ## Nodes & Tools
 - n8n Schedule Trigger
 - Google Calendar (OAuth2)

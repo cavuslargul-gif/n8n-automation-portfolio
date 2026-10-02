@@ -27,6 +27,8 @@ Schedule Trigger (daily 8:00) → Query Today's Heartbeat (Data Table) + constan
 
 **Known limitation (found and fixed during testing — kept here deliberately):** The first version queried `heartbeat_log` directly and branched on "0 rows returned." That broke in exactly the case it was built to catch: n8n skips downstream nodes entirely when a node outputs 0 items, so the empty-table case killed the execution chain *before* the IF or the alert ever ran — the monitor was silent exactly when it needed to speak. `alwaysOutputData` on the query node didn't fix it either (it has no effect on this node type with zero matches). The fix: a constant marker item is merged in alongside the query result with `append` mode, so the chain always carries at least one item regardless of what the query finds — then a Code node explicitly checks for a real timestamp among them. Verified against both real outcomes (table empty → alert sent, confirmed via Gmail's `SENT` response; table has today's row → no alert), not just a clean one.
 
+**Replay:** This workflow is schedule-triggered and re-queries `heartbeat_log` fresh on every run, so workflow 13b's replay (re-triggering it) is meaningful here, not just a formality — the same as workflows 10 and 12.
+
 ## Nodes & Tools
 - n8n Schedule Trigger
 - n8n Data Table

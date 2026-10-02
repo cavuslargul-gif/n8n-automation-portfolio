@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Use-Case & Nodes\n\n**Use Case:** Zentraler Error-Handler für alle Tamplate_admin_*-Workflows. Wird über die Workflow-Einstellung „Error Workflow\" automatisch von anderen Workflows aufgerufen, sobald dort ein unbehandelter Fehler auftritt. Schreibt jeden Fehler strukturiert in ein zentrales Audit-Log, ohne dass der fehlerhafte Workflow selbst eigene Fehlerbehandlungs-Logik enthalten muss.\n\n**1. Fehler-Trigger (Error Trigger):** Wird automatisch von n8n ausgelöst, sobald ein Workflow fehlschlägt, der diesen hier als Error Workflow eingetragen hat. Liefert den vollständigen Fehlerkontext (Workflow, Node, Meldung, Execution-ID).\n\n**2. Fehler-Log schreiben (Data Table):** Schreibt eine Zeile pro Fehler in workflow_error_log: Zeitstempel, Workflow-Name, fehlgeschlagener Node, Fehlermeldung, Execution-ID.\n\n**Einbindung:** Wird in den Settings → Error Workflow der anderen Workflows (z. B. Mahnwesen, Kundenanfrage-Routing, admin_übersicht) referenziert — keine manuelle Verdrahtung im jeweiligen Workflow nötig.\n\n**Nachvollziehbarkeit:** Die workflow_error_log-Tabelle wird auch von der Tagesübersicht (Tamplate_admin_übersicht) ausgelesen — offene Fehler tauchen so automatisch im regulären Admin-Digest auf, statt nur in der n8n-internen Execution-Historie zu verschwinden.",
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Zentraler Error-Handler für alle Tamplate_admin_*-Workflows. Wird über die Workflow-Einstellung „Error Workflow\" automatisch von anderen Workflows aufgerufen, sobald dort ein unbehandelter Fehler auftritt. Schreibt jeden Fehler strukturiert in ein zentrales Audit-Log, ohne dass der fehlerhafte Workflow selbst eigene Fehlerbehandlungs-Logik enthalten muss.\n\n**1. Fehler-Trigger (Error Trigger):** Wird automatisch von n8n ausgelöst, sobald ein Workflow fehlschlägt, der diesen hier als Error Workflow eingetragen hat. Liefert den vollständigen Fehlerkontext (Workflow, Node, Meldung, Execution-ID).\n\n**2. Fehler-Log schreiben (Data Table):** Schreibt eine Zeile pro Fehler in workflow_error_log: Zeitstempel, Workflow-Name, fehlgeschlagener Node, Fehlermeldung, Execution-ID, plus status/retry_count/workflow_id für den ergänzenden Replay-Workflow.\n\n**Einbindung:** Wird in den Settings → Error Workflow der anderen Workflows (z. B. Mahnwesen, Kundenanfrage-Routing, admin_übersicht) referenziert — keine manuelle Verdrahtung im jeweiligen Workflow nötig.\n\n**Nachvollziehbarkeit:** Die workflow_error_log-Tabelle wird auch von der Tagesübersicht (Tamplate_admin_übersicht) ausgelesen — offene Fehler tauchen so automatisch im regulären Admin-Digest auf, statt nur in der n8n-internen Execution-Historie zu verschwinden.\n\n**Dead-Letter Queue:** status/retry_count/workflow_id machen aus dem reinen Audit-Log eine echte DLQ — ein separater Replay-Workflow (13b) kann offene Fehler gezielt erneut anstossen. Details und Einschränkungen dort.",
         "height": 480,
         "width": 900,
         "color": 4
@@ -32,7 +32,10 @@
             "workflow_name": "={{ $json.workflow?.name ?? 'unbekannt' }}",
             "node_name": "={{ $json.execution?.error?.node?.name ?? $json.execution?.lastNodeExecuted ?? 'unbekannt' }}",
             "fehlermeldung": "={{ $json.execution?.error?.message ?? 'unbekannt' }}",
-            "execution_id": "={{ $json.execution?.id ?? '' }}"
+            "execution_id": "={{ $json.execution?.id ?? '' }}",
+            "status": "offen",
+            "retry_count": 0,
+            "workflow_id": "={{ $json.workflow?.id ?? '' }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -40,7 +43,10 @@
             { "id": "workflow_name", "displayName": "workflow_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
             { "id": "node_name", "displayName": "node_name", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
             { "id": "fehlermeldung", "displayName": "fehlermeldung", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
-            { "id": "execution_id", "displayName": "execution_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false }
+            { "id": "execution_id", "displayName": "execution_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "status", "displayName": "status", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false },
+            { "id": "retry_count", "displayName": "retry_count", "required": false, "defaultMatch": false, "display": true, "type": "number", "readOnly": false, "removed": false },
+            { "id": "workflow_id", "displayName": "workflow_id", "required": false, "defaultMatch": false, "display": true, "type": "string", "readOnly": false, "removed": false }
           ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false

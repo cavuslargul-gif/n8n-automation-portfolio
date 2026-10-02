@@ -35,6 +35,7 @@ Workflows that don't belong to one specific domain — they sit underneath or al
 |---|-------|----------|-------|
 | 12 | Compliance & Error Handling | Dunning Approval with Human-in-the-Loop and Audit Trail | Schedule Trigger, n8n Data Table, Gmail Send-and-Wait, IF Node, Set |
 | 13 | Compliance & Error Handling | Central Error Handler with Audit Log | n8n Error Trigger, n8n Data Table |
+| 13b | Compliance & Error Handling | Dead-Letter Queue Replay (for 13) | Manual Trigger, n8n Data Table, Execute Workflow, Loop (Split in Batches) |
 | 14a/14b | Compliance & Error Handling | Error Handling Main/Sub Pattern | Schedule Trigger, Set, Stop and Error, Error Trigger |
 | 15 | Compliance & Error Handling | Heartbeat Monitor for Daily Admin Run | Schedule Trigger, n8n Data Table, Set, Merge, Code, IF Node, Gmail |
 

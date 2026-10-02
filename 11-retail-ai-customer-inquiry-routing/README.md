@@ -37,6 +37,8 @@ Webhook (Form Submission) → Normalize Fields → Request-ID (Hash, Crypto) →
 
 Classification accuracy is measured separately in eval suite 11b (below) — the fallback to "Sonstiges" is about not crashing on an unexpected model response, not a substitute for knowing the accuracy of the expected ones.
 
+**Known limitation:** The "Sonstiges" fallback and this workflow's coupling to the central error handler (13) cover different failures — the fallback absorbs an unexpected-but-valid model response, the error handler catches what actually crashes (e.g. an API outage). For the latter, workflow 13b can replay by re-triggering the workflow, but since this one is webhook-triggered, the original payload isn't stored anywhere the Error Trigger can see — the specific customer inquiry that failed can't be reconstructed, only re-submitted by the sender.
+
 ## Nodes & Tools
 - n8n Webhook
 - n8n Set / Edit Fields

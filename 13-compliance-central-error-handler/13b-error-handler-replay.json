@@ -1,0 +1,104 @@
+{
+  "name": "Error-Handler (Replay)",
+  "nodes": [
+    {
+      "id": "sticky1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-80, -360],
+      "parameters": {
+        "content": "## Use-Case & Nodes\n\n**Use Case:** Ergänzt den zentralen Error-Handler (Workflow 13) um Replay. Liest alle Zeilen mit status=offen aus workflow_error_log, führt den jeweiligen Ziel-Workflow per workflow_id erneut aus und markiert die Zeile als wiederholt mit erhöhtem retry_count.\n\n**1. Replay-Start:** Manueller Trigger - bewusst kein Schedule, Replay ist eine Entscheidung, kein Automatismus.\n**2. Offene Fehler laden (Data Table):** Alle Zeilen mit status=offen.\n**3. Je einen Fehler verarbeiten (Loop):** Ein Fehler nach dem anderen.\n**4. Workflow erneut ausführen (Execute Workflow):** Startet den ursprünglich fehlgeschlagenen Workflow per workflow_id neu. Fehlerausgang ist zurück zur Loop-Node verbunden, damit ein einzelner fehlgeschlagener Replay nicht die gesamte Schleife abbricht.\n**5. Status aktualisieren (Data Table):** Setzt status=wiederholt, erhöht retry_count.\n\n**Wichtige Einschränkung:** Der Error Trigger liefert nicht die ursprünglichen Eingabedaten des fehlgeschlagenen Laufs - Replay heisst hier \"Workflow erneut anstossen\", nicht \"identischen Request erneut verarbeiten\". Bei schedule-getriggerten Workflows (10, 12, 15) ist das sinnvoll. Bei webhook-getriggertem Workflow 11 kann die konkrete fehlgeschlagene Kundenanfrage so nicht reproduziert werden - der Kunde müsste erneut einreichen.\n\n**Verifiziert:** Known-bad-payload-Test (leere workflow_id) deckte einen echten Bug auf - der Error-Branch rief nextBatch nicht auf, wodurch die Schleife nach dem ersten Fehler komplett stehenblieb. Nach dem Fix: zweiter Testlauf mit Bad-Payload-Zeile UND echtem Happy-Path-Replay (gegen Eval Suite 11b) in einem Durchlauf, beide korrekt verarbeitet.\n\n**Bewusst einfach gehalten (v1):** Kein Retry-Cap, kein Backoff zwischen Replay-Versuchen."
+      }
+    },
+    {
+      "id": "trigger1",
+      "name": "Replay-Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 80],
+      "parameters": {}
+    },
+    {
+      "id": "dtread1",
+      "name": "Offene Fehler laden",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [224, 80],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-error-log-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "status", "keyValue": "offen" }] },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "loop1",
+      "name": "Je einen Fehler verarbeiten",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [448, 80],
+      "parameters": { "batchSize": 1 }
+    },
+    {
+      "id": "execwf1",
+      "name": "Workflow erneut ausführen",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [672, 0],
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "source": "database",
+        "workflowId": { "__rl": true, "mode": "id", "value": "={{ $json.workflow_id }}" },
+        "options": {}
+      }
+    },
+    {
+      "id": "dtwrite1",
+      "name": "Status aktualisieren",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [896, 80],
+      "parameters": {
+        "operation": "update",
+        "dataTableId": { "__rl": true, "mode": "id", "value": "your-error-log-datatable-id" },
+        "matchType": "allConditions",
+        "filters": { "conditions": [{ "keyName": "id", "keyValue": "={{ $('Offene Fehler laden').item.json.id }}" }] },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "wiederholt",
+            "retry_count": "={{ ($('Offene Fehler laden').item.json.retry_count || 0) + 1 }}"
+          }
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Replay-Start": { "main": [[{ "node": "Offene Fehler laden", "type": "main", "index": 0 }]] },
+    "Offene Fehler laden": { "main": [[{ "node": "Je einen Fehler verarbeiten", "type": "main", "index": 0 }]] },
+    "Je einen Fehler verarbeiten": { "main": [[], [{ "node": "Workflow erneut ausführen", "type": "main", "index": 0 }]] },
+    "Workflow erneut ausführen": {
+      "main": [
+        [{ "node": "Status aktualisieren", "type": "main", "index": 0 }],
+        [{ "node": "Je einen Fehler verarbeiten", "type": "main", "index": 0 }]
+      ]
+    },
+    "Status aktualisieren": { "main": [[{ "node": "Je einen Fehler verarbeiten", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "errorWorkflow": "your-error-handler-workflow-id"
+  },
+  "versionId": "placeholder",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "id": "your-workflow-id",
+  "tags": []
+}
