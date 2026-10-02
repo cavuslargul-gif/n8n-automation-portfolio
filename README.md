@@ -21,8 +21,8 @@ encountered in practice.
 | 06b | AI & Education | Enterprise RAG – Knowledge Chat | n8n Chat Trigger, AI Agent, OpenAI GPT-5, Qdrant |
 | 07 | AI & Education | AI Content Generator | n8n Form, OpenAI, Switch Node, Gmail |
 | 08 | Hospitality | Hotel Maintenance Manager | n8n Form Trigger, Notion, Slack |
-| 09a | Hospitality | Guest Feedback Analysis | n8n Form, OpenAI, Switch Node, Gmail |
-| 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, OpenAI |
+| 09a | Hospitality | Guest Feedback Analysis | n8n Form, Basic LLM Chain, Groq Chat Model, Switch Node, Gmail |
+| 09b | Hospitality | Sentiment Eval Suite (for 09) | Manual Trigger, Google Sheets, Basic LLM Chain, Groq Chat Model |
 | 10 | Retail | Dunning Management with Admin Overview | Schedule Trigger, Google Calendar, n8n Data Table, Aggregate, Merge, Gmail, Google Tasks |
 | 11 | Retail | AI Customer Inquiry Routing | n8n Webhook, Crypto, n8n Data Table, Basic LLM Chain, Groq Chat Model, Set, Gmail |
 | 11b | Retail | Categorization Eval Suite (for 11) | Manual Trigger, n8n Data Table, Basic LLM Chain, Groq Chat Model |
