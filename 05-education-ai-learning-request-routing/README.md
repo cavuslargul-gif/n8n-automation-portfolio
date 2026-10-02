@@ -6,9 +6,9 @@ Automatically classifies incoming learning requests by skill level using AI and 
 ## Workflow
 Form Trigger → Basic LLM Chain + Groq (AI classification) → Switch (3-way routing + fallback) → Gmail (personalized recommendations) + Gmail (error notification)
 
-
-<img width="1305" height="525" alt="image" src="https://github.com/user-attachments/assets/c22e3ae1-9816-4cbd-8d0d-84802e65c7c5" />
-
+<p align="center">
+<img width="494" height="606" alt="image" src="https://github.com/user-attachments/assets/f162ef11-7a9a-420b-b2eb-815d562e3592" />
+</p>
 
 ## How it was built
 - Form Trigger configured with three fields: name, learning topic, and self-assessment (Anfänger / Fortgeschritten / Experte)
