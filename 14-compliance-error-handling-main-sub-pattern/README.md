@@ -6,11 +6,15 @@ A reusable Main/Sub error-handling pattern: a dedicated "sub" workflow that only
 ## Workflow
 **14a (Main, test harness):** Schedule Trigger → Mock Order (Set) → Payload Validation (IF) → Simulate Failure, two variants depending on validity (Stop and Error)
 
-<img width="819" height="453" alt="image" src="https://github.com/user-attachments/assets/8de127ee-cb23-4b44-bd8d-51605eba35ee" />
+<p align="center">
+<img width="648" height="581" alt="image" src="https://github.com/user-attachments/assets/208cfe20-954a-45f6-9e86-426e2218563e" />
+</p>
 
 **14b (Sub, the actual pattern):** Error Trigger → Extract Error Info (Set)
 
-<img width="816" height="456" alt="image" src="https://github.com/user-attachments/assets/08afabf4-35de-417a-b8be-b71e10a510a8" />
+<p align="center">
+<img width="531" height="298" alt="image" src="https://github.com/user-attachments/assets/6d61c49a-7e8b-4ab9-971b-8dc4362dfe0d" />
+</p>
 
 ## How it was built
 - **14a** runs every 5 minutes, builds a fake order record (`customer_id`, `action`, `amount`) with a Set node, validates it with an IF node (`customer_id` present, `amount` numeric), then deliberately stops via the Stop and Error node — a fixed "gateway timeout" message for a valid record, a distinct "invalid order payload" message for a malformed one — purely to produce a reliable, repeatable failure for testing
