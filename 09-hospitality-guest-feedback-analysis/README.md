@@ -6,7 +6,9 @@ Automates guest feedback processing — guests submit a form after their stay, a
 ## Workflow
 Guest Feedback Form → Sentiment Analysis (Basic LLM Chain, Groq) → Routing (Switch) → Email Response (Guest or Management)
 
-<img width="1361" height="670" alt="image" src="https://github.com/user-attachments/assets/b39247d6-2f94-4e24-a8b9-da2825f4c9cd" />
+<p align="center">
+<img width="984" height="511" alt="image" src="https://github.com/user-attachments/assets/328dcba2-e45b-4a84-a278-da7601c72ce0" />
+</p>
 
 ## How it was built
 - n8n Form Trigger with fields: room number (Number), check-in date (Date), check-out date (Date), overall rating (Radio Buttons: 1–5), feedback (Textarea), email address (Text Input)
@@ -46,8 +48,6 @@ Designed for hotels that want to close the feedback loop automatically. Positive
 
 # Eval Suite (09b)
 
-<img width="1513" height="565" alt="image" src="https://github.com/user-attachments/assets/25b70486-a62d-45ab-87dc-7dc620981fa0" />
-
 The AI classification step is covered by a separate evaluation workflow
 (`09b–sentiment-eval-suite.json`). Instead of assuming the sentiment
 classification works, it measures how well it works:
@@ -60,6 +60,10 @@ yes/no). Requests run in batches of 5 with a 40-second pause between
 batches — Groq's free tier limits to 8000 tokens/minute, not
 requests/minute, and running all 29 items back-to-back hit that cap after
 roughly 13-16 calls.
+
+<p align="center">
+<img width="1108" height="456" alt="image" src="https://github.com/user-attachments/assets/9cc71351-3a60-4260-90fe-1ae425f0ca1f" />
+</p>
 
 **Test set design (v1, 25 cases):** German hotel feedback cases across
 three sentiment classes, deliberately including hard cases — irony, mixed
