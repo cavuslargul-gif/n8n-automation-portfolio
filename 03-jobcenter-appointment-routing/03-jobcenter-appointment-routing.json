@@ -3,18 +3,15 @@
   "nodes": [
     {
       "parameters": {
-        "content": "# Nodes\n\n- ## Form Trigger = Antragstellung (Registration Form)\n- ## If-Node = Filterung nach Alter (Age Check)\n- ## Gmail (send: message) = Nachricht Kunde unter 25 (Email: Client under 25)\n- ## Gmail (send: message) = Nachricht Kunde über 25 (Email: Client Over 25)",
-        "height": 224,
+        "content": "# Nodes\n\n- ## Form Trigger = Antragstellung (Registration Form), Geburtsdatum als Datumsfeld\n- ## Set = Geburtsdatum normalisieren (Tag zuerst wie im deutschsprachigen Raum: T.M.JJJJ, T/M/JJJJ oder JJJJ-MM-TT; Zukunft, vor 1900 und nicht existierende Tage wie 31.02. = ungültig)\n- ## If-Node = Geburtsdatum gültig? (Validierung)\n- ## Gmail = Manuelle Prüfung (Email: Ungültiges Geburtsdatum), geht an die Sachbearbeitung\n- ## If-Node = Filterung nach Alter (Age Check)\n- ## Gmail (send: message) = Nachricht Kunde unter 25 (Email: Client under 25)\n- ## Gmail (send: message) = Nachricht Kunde über 25 (Email: Client Over 25)\n\n**Known-bad-payload-Test deckte Fehler auf:** (1) Leeres oder nicht lesbares Geburtsdatum ließ den Age Check hart abstürzen, ohne Fallback und ohne Mail. (2) Das mehrdeutige Datum 05.10.2001 wurde mit vertauschtem Tag/Monat gelesen (10. Mai) und lautlos in „über 25\" geroutet, obwohl die Person unter 25 ist. (3) Beim Nachziehen: 5.10.2001 ohne führende Null wurde fälschlich abgelehnt. Alles behoben: explizites Parsen, ungültige Eingaben gehen zur manuellen Prüfung. Real verifiziert (Grenzfall, leer, Freitext, Zukunft, nicht existierendes Datum, mit/ohne führende Null, Schrägstrich).\n\nError Workflow ist auf den zentralen Error-Handler gesetzt (nur bei Produktions-Executions aktiv).",
+        "height": 416,
         "width": 720,
         "color": 5
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [
-        -48,
-        -288
-      ],
+      "position": [0, -208],
       "typeVersion": 1,
-      "id": "b890e53f-ced8-4201-baa0-498fd3419d39",
+      "id": "sticky1",
       "name": "Sticky Note"
     },
     {
@@ -23,28 +20,13 @@
         "formDescription": "Online-Anmeldung beim Jobcenter – Arbeitsvermittlung. Bitte füllen Sie alle Felder vollständig aus.",
         "formFields": {
           "values": [
-            {
-              "fieldLabel": "Vorname"
-            },
-            {
-              "fieldLabel": "Nachname"
-            },
-            {
-              "fieldLabel": "Geburtsdatum"
-            },
+            { "fieldLabel": "Vorname" },
+            { "fieldLabel": "Nachname" },
+            { "fieldLabel": "Geburtsdatum", "fieldType": "date", "requiredField": true },
             {
               "fieldLabel": "Erwerbsfähig",
               "fieldType": "dropdown",
-              "fieldOptions": {
-                "values": [
-                  {
-                    "option": "Ja"
-                  },
-                  {
-                    "option": "Nein"
-                  }
-                ]
-              }
+              "fieldOptions": { "values": [{ "option": "Ja" }, { "option": "Nein" }] }
             }
           ]
         },
@@ -52,51 +34,95 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [
-        0,
-        0
-      ],
-      "id": "c337520e-e874-4277-852d-35f7526b9008",
+      "position": [48, 288],
+      "id": "formtrigger1",
       "name": "Antragstellung (Registration Form)",
-      "webhookId": "a21536bc-76cc-460e-ad94-8696d313d0f5"
+      "webhookId": "your-webhook-id"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "gd1",
+              "name": "geburtsdatum_iso",
+              "type": "string",
+              "value": "={{ (() => { const s = String($json.Geburtsdatum ?? '').trim(); const formats = ['d.M.yyyy', 'd/M/yyyy', 'yyyy-MM-dd']; let d = null; for (const f of formats) { const t = DateTime.fromFormat(s, f); if (t.isValid) { d = t; break; } } return (d && d.year >= 1900 && d <= DateTime.now()) ? d.toFormat('yyyy-MM-dd') : ''; })() }}"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [256, 288],
+      "id": "set1",
+      "name": "Geburtsdatum normalisieren"
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3 },
           "conditions": [
             {
-              "id": "69ee8d20-825b-4f84-b572-90c090f2673a",
-              "leftValue": "={{ $json.Geburtsdatum }}",
-              "rightValue": "={{ $now.minus(25, 'years').toFormat('yyyy-MM-dd') }}",
-              "operator": {
-                "type": "dateTime",
-                "operation": "after"
-              }
+              "id": "cond-valid",
+              "leftValue": "={{ $json.geburtsdatum_iso }}",
+              "rightValue": "",
+              "operator": { "type": "string", "operation": "notEmpty", "singleValue": true }
             }
           ],
-          "combinator": "or"
+          "combinator": "and"
         },
-        "looseTypeValidation": "",
         "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [
-        208,
-        0
-      ],
-      "id": "440b864c-9f56-4ce6-9bc2-976b952d86c2",
+      "position": [464, 288],
+      "id": "if-valid",
+      "name": "Geburtsdatum gültig?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3 },
+          "conditions": [
+            {
+              "id": "cond-age",
+              "leftValue": "={{ $json.geburtsdatum_iso }}",
+              "rightValue": "={{ $now.minus(25, 'years').toFormat('yyyy-MM-dd') }}",
+              "operator": { "type": "dateTime", "operation": "after" }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [672, 288],
+      "id": "if-age",
       "name": "Filterung nach Alter (Age Check)"
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
+        "subject": "Manuelle Prüfung: Ungültiges Geburtsdatum im Terminantrag",
+        "emailType": "text",
+        "message": "=Ein Terminantrag konnte nicht automatisch zugeordnet werden.\n\nName: {{ $json.Vorname }} {{ $json.Nachname }}\nEingegebenes Geburtsdatum: \"{{ $json.Geburtsdatum }}\"\n\nDas Datum ist leer, nicht lesbar (erwartet: TT.MM.JJJJ oder JJJJ-MM-TT), liegt in der Zukunft oder vor 1900. Bitte Antrag manuell prüfen.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [672, 560],
+      "id": "gmail-review",
+      "name": "Manuelle Prüfung (Email: Ungültiges Geburtsdatum)",
+      "webhookId": "your-webhook-id",
+      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
         "subject": "Terminbestätigung Arbeitsvermittlung",
         "emailType": "text",
         "message": "=Guten Tag {{ $json.Vorname }} {{ $json.Nachname }},  \n\nIhr Termin bei der Arbeitsvermittlung wurde erfasst.  \n\nSie werden in Kürze über Ihren zugewiesenen Termin informiert.  \n\nMit freundlichen Grüßen \nJobcenter",
@@ -104,23 +130,15 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [
-        480,
-        -32
-      ],
-      "id": "733b0eea-4245-484a-92f5-c589bbd37fec",
+      "position": [880, 256],
+      "id": "gmail-u25",
       "name": "Nachricht U 25 (Email: Under 25)",
-      "webhookId": "bbc37552-c67a-407f-9f83-4ea46dc1e19b",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6Ma0zqj54VErcxJp",
-          "name": "Gmail OAuth2 API"
-        }
-      }
+      "webhookId": "your-webhook-id",
+      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
     },
     {
       "parameters": {
-        "sendTo": "cavuslargul@gmail.com",
+        "sendTo": "your-email@example.com",
         "subject": "Terminbestätigung Arbeitsvermittlung",
         "emailType": "text",
         "message": "=Guten Tag {{ $json.Vorname }} {{ $json.Nachname }},  \n\nIhr Termin bei der Arbeitsvermittlung wurde erfasst.  \n\nSie werden in Kürze über Ihren zugewiesenen Termin informiert.  \n\nMit freundlichen Grüßen \n\nJobcenter",
@@ -128,64 +146,42 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [
-        480,
-        176
-      ],
-      "id": "8ba4afed-7d8a-4b88-a1c2-4a44cb5dcef3",
+      "position": [880, 400],
+      "id": "gmail-o25",
       "name": "Nachricht Kunde über 25 (Email: Client Over 25)",
-      "webhookId": "01888603-8598-4936-9f41-b6ce9a4dc514",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "6Ma0zqj54VErcxJp",
-          "name": "Gmail OAuth2 API"
-        }
-      }
+      "webhookId": "your-webhook-id",
+      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
     }
   ],
   "pinData": {},
   "connections": {
-    "Antragstellung (Registration Form)": {
+    "Antragstellung (Registration Form)": { "main": [[{ "node": "Geburtsdatum normalisieren", "type": "main", "index": 0 }]] },
+    "Geburtsdatum normalisieren": { "main": [[{ "node": "Geburtsdatum gültig?", "type": "main", "index": 0 }]] },
+    "Geburtsdatum gültig?": {
       "main": [
-        [
-          {
-            "node": "Filterung nach Alter (Age Check)",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Filterung nach Alter (Age Check)", "type": "main", "index": 0 }],
+        [{ "node": "Manuelle Prüfung (Email: Ungültiges Geburtsdatum)", "type": "main", "index": 0 }]
       ]
     },
     "Filterung nach Alter (Age Check)": {
       "main": [
-        [
-          {
-            "node": "Nachricht U 25 (Email: Under 25)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Nachricht Kunde über 25 (Email: Client Over 25)",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        [{ "node": "Nachricht U 25 (Email: Under 25)", "type": "main", "index": 0 }],
+        [{ "node": "Nachricht Kunde über 25 (Email: Client Over 25)", "type": "main", "index": 0 }]
       ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "errorWorkflow": "your-error-handler-workflow-id"
   },
-  "versionId": "67abd1b4-4d80-408a-b3dc-f86fae1ba9b9",
+  "versionId": "placeholder",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "3e2b28fb454f454676ecdb978a4603c224220adeac84106b636207c173396916"
+    "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "id": "JFeXLOQeI5xUPCQ4",
+  "id": "your-workflow-id",
   "tags": []
 }
