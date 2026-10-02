@@ -1,6 +1,6 @@
 # Worksheets & Checklists
 
-Eigenständige Arbeitspapiere aus dem Selbststudium (Stand: Juli 2026) — die Methodik hinter den Workflows in diesem Portfolio. Während die nummerierten Ordner zeigen, *was* gebaut wurde, zeigen diese Dokumente *wie* ich an ein KI-Automatisierungsprojekt herangehe: von der ersten Analyse über Governance, Architektur und gestuften Rollout bis zum Betrieb.
+Eigenständige Arbeitspapiere aus dem Selbststudium — die Methodik hinter den Workflows in diesem Portfolio. Während die nummerierten Ordner zeigen, *was* gebaut wurde, zeigen diese Dokumente *wie* ich an ein KI-Automatisierungsprojekt herangehe: von der ersten Analyse über Governance, Architektur und gestuften Rollout bis zum Betrieb.
 
 ## Einzeldokumente (nutzbar und editierbar als eigenständige Checklisten)
 
