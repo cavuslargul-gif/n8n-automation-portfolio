@@ -39,6 +39,8 @@ Classification accuracy is measured separately in eval suite 11b (below) — the
 
 **Known limitation:** The "Sonstiges" fallback and this workflow's coupling to the central error handler (13) cover different failures — the fallback absorbs an unexpected-but-valid model response, the error handler catches what actually crashes (e.g. an API outage). For the latter, workflow 13b can replay by re-triggering the workflow, but since this one is webhook-triggered, the original payload isn't stored anywhere the Error Trigger can see — the specific customer inquiry that failed can't be reconstructed, only re-submitted by the sender.
 
+**Tested against malformed input:** Two real production tests. First, a fully empty webhook body (`{}`) — every field normalized to an empty string, the model classified the empty message as "Sonstiges", and the run completed end-to-end with no crash. That case's dedupe key is a hash of three empty strings, so a second genuinely-empty submission would be flagged as a duplicate of the first — a synthetic-test artifact, not a realistic one, since real traffic always carries either an explicit `request_id` or actual contact data. To confirm that directly, a second test sent a realistic partial payload (explicit `request_id`, a name, but empty email/message) twice: the first run processed normally using the real `request_id` as the dedupe key (not a content hash); the second, identical request was stopped cleanly at the duplicate check with zero items — no second email, no second audit log row, exactly like the original idempotency test above.
+
 ## Nodes & Tools
 - n8n Webhook
 - n8n Set / Edit Fields
