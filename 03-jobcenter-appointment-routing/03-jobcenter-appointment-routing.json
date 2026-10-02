@@ -3,13 +3,16 @@
   "nodes": [
     {
       "parameters": {
-        "content": "# Nodes\n\n- ## Form Trigger = Antragstellung (Registration Form), Geburtsdatum als Datumsfeld\n- ## Set = Geburtsdatum normalisieren (Tag zuerst wie im deutschsprachigen Raum: T.M.JJJJ, T/M/JJJJ oder JJJJ-MM-TT; Zukunft, vor 1900 und nicht existierende Tage wie 31.02. = ungültig)\n- ## If-Node = Geburtsdatum gültig? (Validierung)\n- ## Gmail = Manuelle Prüfung (Email: Ungültiges Geburtsdatum), geht an die Sachbearbeitung\n- ## If-Node = Filterung nach Alter (Age Check)\n- ## Gmail (send: message) = Nachricht Kunde unter 25 (Email: Client under 25)\n- ## Gmail (send: message) = Nachricht Kunde über 25 (Email: Client Over 25)\n\n**Known-bad-payload-Test deckte Fehler auf:** (1) Leeres oder nicht lesbares Geburtsdatum ließ den Age Check hart abstürzen, ohne Fallback und ohne Mail. (2) Das mehrdeutige Datum 05.10.2001 wurde mit vertauschtem Tag/Monat gelesen (10. Mai) und lautlos in „über 25\" geroutet, obwohl die Person unter 25 ist. (3) Beim Nachziehen: 5.10.2001 ohne führende Null wurde fälschlich abgelehnt. Alles behoben: explizites Parsen, ungültige Eingaben gehen zur manuellen Prüfung. Real verifiziert (Grenzfall, leer, Freitext, Zukunft, nicht existierendes Datum, mit/ohne führende Null, Schrägstrich).\n\nError Workflow ist auf den zentralen Error-Handler gesetzt (nur bei Produktions-Executions aktiv).",
-        "height": 416,
-        "width": 720,
-        "color": 5
+        "content": "# Nodes\n\n**- Form Trigger=**  Antragstellung (Registration Form), Geburtsdatum als Datumsfeld\n**- Set= Geburtsdatum normalisieren (Tag zuerst wie im deutschsprachigen Raum:**  \n      T.M.JJJJ, T/M/JJJJ oder JJJJ-MM-TT; Zukunft, vor 1900 und nicht existierende Tage wie 31.02. = ungültig)\n**-  If-Node=**  Geburtsdatum gültig? (Validierung)\n**-  Gmail/ Manuelle Prüfung:**  (Email: Ungültiges Geburtsdatum), geht an die Sachbearbeitung\n**-  If-Node=**  Filterung nach Alter (Age Check)\n**- Gmail (send: message)=**  Nachricht Kunde unter 25 (Email: Client under 25)\n**- Gmail (send: message)=** Nachricht Kunde über 25 (Email: Client over 25)\n\n## **Known-bad-payload-Test deckte Fehler auf:** \n(1) Leeres oder nicht lesbares Geburtsdatum ließ den Age Check hart abstürzen, ohne Fallback und ohne Mail. (2) Das mehrdeutige Datum 05.10.2001 wurde mit vertauschtem Tag/Monat gelesen (10. Mai) und lautlos in „über 25\" geroutet, obwohl die Person unter 25 ist. (3) Beim Nachziehen: 5.10.2001 ohne führende Null wurde fälschlich abgelehnt. Alles behoben und real verifiziert (Grenzfall, leer, Freitext, Zukunft, nicht existierendes Datum, mit/ohne führende Null, Schrägstrich).\n\n## **Error Workflow**\nIst auf den zentralen Error-Handler gesetzt (nur bei Produktions-Executions aktiv).",
+        "height": 460,
+        "width": 756,
+        "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
-      "position": [0, -208],
+      "position": [
+        -144,
+        -64
+      ],
       "typeVersion": 1,
       "id": "sticky1",
       "name": "Sticky Note"
@@ -20,13 +23,30 @@
         "formDescription": "Online-Anmeldung beim Jobcenter – Arbeitsvermittlung. Bitte füllen Sie alle Felder vollständig aus.",
         "formFields": {
           "values": [
-            { "fieldLabel": "Vorname" },
-            { "fieldLabel": "Nachname" },
-            { "fieldLabel": "Geburtsdatum", "fieldType": "date", "requiredField": true },
+            {
+              "fieldLabel": "Vorname"
+            },
+            {
+              "fieldLabel": "Nachname"
+            },
+            {
+              "fieldLabel": "Geburtsdatum",
+              "fieldType": "date",
+              "requiredField": true
+            },
             {
               "fieldLabel": "Erwerbsfähig",
               "fieldType": "dropdown",
-              "fieldOptions": { "values": [{ "option": "Ja" }, { "option": "Nein" }] }
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Ja"
+                  },
+                  {
+                    "option": "Nein"
+                  }
+                ]
+              }
             }
           ]
         },
@@ -34,7 +54,10 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [48, 288],
+      "position": [
+        48,
+        480
+      ],
       "id": "formtrigger1",
       "name": "Antragstellung (Registration Form)",
       "webhookId": "your-webhook-id"
@@ -56,20 +79,32 @@
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [256, 288],
+      "position": [
+        272,
+        480
+      ],
       "id": "set1",
       "name": "Geburtsdatum normalisieren"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3 },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
           "conditions": [
             {
               "id": "cond-valid",
               "leftValue": "={{ $json.geburtsdatum_iso }}",
               "rightValue": "",
-              "operator": { "type": "string", "operation": "notEmpty", "singleValue": true }
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
             }
           ],
           "combinator": "and"
@@ -78,20 +113,31 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [464, 288],
+      "position": [
+        496,
+        480
+      ],
       "id": "if-valid",
       "name": "Geburtsdatum gültig?"
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 3 },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
           "conditions": [
             {
               "id": "cond-age",
               "leftValue": "={{ $json.geburtsdatum_iso }}",
               "rightValue": "={{ $now.minus(25, 'years').toFormat('yyyy-MM-dd') }}",
-              "operator": { "type": "dateTime", "operation": "after" }
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
             }
           ],
           "combinator": "or"
@@ -100,7 +146,10 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [672, 288],
+      "position": [
+        720,
+        384
+      ],
       "id": "if-age",
       "name": "Filterung nach Alter (Age Check)"
     },
@@ -114,11 +163,19 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [672, 560],
+      "position": [
+        720,
+        576
+      ],
       "id": "gmail-review",
       "name": "Manuelle Prüfung (Email: Ungültiges Geburtsdatum)",
       "webhookId": "your-webhook-id",
-      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
     },
     {
       "parameters": {
@@ -130,11 +187,19 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [880, 256],
+      "position": [
+        944,
+        288
+      ],
       "id": "gmail-u25",
       "name": "Nachricht U 25 (Email: Under 25)",
       "webhookId": "your-webhook-id",
-      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
     },
     {
       "parameters": {
@@ -146,27 +211,79 @@
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [880, 400],
+      "position": [
+        944,
+        480
+      ],
       "id": "gmail-o25",
       "name": "Nachricht Kunde über 25 (Email: Client Over 25)",
       "webhookId": "your-webhook-id",
-      "credentials": { "gmailOAuth2": { "id": "your-gmail-credential-id", "name": "Gmail account" } }
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "your-gmail-credential-id",
+          "name": "Gmail account"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
-    "Antragstellung (Registration Form)": { "main": [[{ "node": "Geburtsdatum normalisieren", "type": "main", "index": 0 }]] },
-    "Geburtsdatum normalisieren": { "main": [[{ "node": "Geburtsdatum gültig?", "type": "main", "index": 0 }]] },
+    "Antragstellung (Registration Form)": {
+      "main": [
+        [
+          {
+            "node": "Geburtsdatum normalisieren",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geburtsdatum normalisieren": {
+      "main": [
+        [
+          {
+            "node": "Geburtsdatum gültig?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Geburtsdatum gültig?": {
       "main": [
-        [{ "node": "Filterung nach Alter (Age Check)", "type": "main", "index": 0 }],
-        [{ "node": "Manuelle Prüfung (Email: Ungültiges Geburtsdatum)", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Filterung nach Alter (Age Check)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Manuelle Prüfung (Email: Ungültiges Geburtsdatum)",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Filterung nach Alter (Age Check)": {
       "main": [
-        [{ "node": "Nachricht U 25 (Email: Under 25)", "type": "main", "index": 0 }],
-        [{ "node": "Nachricht Kunde über 25 (Email: Client Over 25)", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Nachricht U 25 (Email: Under 25)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nachricht Kunde über 25 (Email: Client Over 25)",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
