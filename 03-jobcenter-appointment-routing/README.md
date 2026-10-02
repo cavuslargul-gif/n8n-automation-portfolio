@@ -6,7 +6,9 @@ Automates the intake and internal routing of new clients registering for an empl
 ## Workflow
 Form submission → Normalize date of birth → Valid? (IF) → Age check (IF, under 25?) → Gmail (confirmation email) · invalid dates → Gmail (manual review)
 
-<img width="637" height="547" alt="image" src="https://github.com/user-attachments/assets/f9e13883-508a-46eb-851b-3e767c7fb658" />
+<p align="center">
+<img width="961" height="661" alt="image" src="https://github.com/user-attachments/assets/7585e51d-06bb-40f9-a71c-b36f2e00caed" />
+</p>
 
 ## How it was built
 - Trigger: n8n Form Trigger (no external auth required), date of birth as a date field
