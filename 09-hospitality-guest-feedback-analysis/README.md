@@ -6,7 +6,7 @@ Automates guest feedback processing — guests submit a form after their stay, a
 ## Workflow
 Guest Feedback Form → Sentiment Analysis (Basic LLM Chain, Groq) → Routing (Switch) → Email Response (Guest or Management)
 
-<img width="655" height="397" alt="image" src="https://github.com/user-attachments/assets/9d43fbf7-0a50-4f64-80a1-80d40cebdaae" />
+<img width="1361" height="670" alt="image" src="https://github.com/user-attachments/assets/b39247d6-2f94-4e24-a8b9-da2825f4c9cd" />
 
 ## How it was built
 - n8n Form Trigger with fields: room number (Number), check-in date (Date), check-out date (Date), overall rating (Radio Buttons: 1–5), feedback (Textarea), email address (Text Input)
@@ -18,10 +18,6 @@ Guest Feedback Form → Sentiment Analysis (Basic LLM Chain, Groq) → Routing (
 - Neutral feedback → Internal info email to hotel management with full details and AI summary
 - Negative feedback → Urgent alert email to hotel management with action-required subject line and AI summary
 - Model temperature set to 0 — found through testing that the default (0.7) produced different results for the identical sarcasm case across repeated runs; see eval suite section below
-  
-## Credentials & Authentication
-
-<img width="629" height="155" alt="image" src="https://github.com/user-attachments/assets/928290cf-2c1d-4b86-8180-352ec841d9d9" />
 
 ## How it works
 1. A guest submits the feedback form after their stay — room number, dates, rating, and free-text feedback
@@ -39,8 +35,6 @@ fallback notification, as implemented in the eval suite 09b).
    
 ## Nodes & Tools
 
-<img width="631" height="473" alt="image" src="https://github.com/user-attachments/assets/b1284516-c053-44dd-a596-1683d40bb4dd" />
-
 - n8n Form Trigger
 - n8n Basic LLM Chain
 - Groq Chat Model (`openai/gpt-oss-20b`)
@@ -52,7 +46,7 @@ Designed for hotels that want to close the feedback loop automatically. Positive
 
 # Eval Suite (09b)
 
-<img width="1263" height="555" alt="image" src="https://github.com/user-attachments/assets/7c2830f6-8941-4977-b5e8-adcef91949f5" />
+<img width="1513" height="565" alt="image" src="https://github.com/user-attachments/assets/25b70486-a62d-45ab-87dc-7dc620981fa0" />
 
 The AI classification step is covered by a separate evaluation workflow
 (`09b–sentiment-eval-suite.json`). Instead of assuming the sentiment
