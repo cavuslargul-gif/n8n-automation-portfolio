@@ -16,7 +16,7 @@ encountered in practice.
 | 02 | Public Administration | ESF Deadline Reminder | Schedule Trigger, Google Sheets, IF Node, Gmail |
 | 03 | Jobcenter | Appointment Routing by Age | n8n Form, IF Node, Gmail |
 | 04 | Jobcenter | ALG II Application Intake | n8n Form, Google Sheets, Gmail |
-| 05 | AI & Education | AI Learning Request Routing | n8n Form, OpenAI, Switch Node, Gmail |
+| 05 | AI & Education | AI Learning Request Routing | n8n Form, Basic LLM Chain, Groq Chat Model, Switch Node, Gmail |
 | 06a | AI & Education | Enterprise RAG – Document Ingestion | n8n Form Trigger, Default Data Loader, OpenAI Embeddings, Qdrant |
 | 06b | AI & Education | Enterprise RAG – Knowledge Chat | n8n Chat Trigger, AI Agent, OpenAI GPT-5, Qdrant |
 | 07 | AI & Education | AI Content Generator | n8n Form, OpenAI, Switch Node, Gmail |
