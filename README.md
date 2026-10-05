@@ -3,7 +3,7 @@ n8n workflow automations covering real business processes — plus reusable comp
 
 ## About me
 I'm a career changer with a background spanning public administration, 
-employment services, retail management, education (M.Ed.) and hospitality. 
+employment services, retail, education (M.Ed.) and hospitality. 
 Each workflow in this portfolio reflects one of those domains — this is not 
 a generic tutorial portfolio, every automation solves a problem I've 
 encountered in practice.
