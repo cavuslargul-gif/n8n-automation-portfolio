@@ -39,5 +39,5 @@ Form submission → OpenAI (content generation) → Switch (platform routing) �
 
 
 ## Background
-Built to demonstrate AI-powered content generation for the German freelance and solopreneur market. Content creation is one of the most time-consuming tasks for small businesses — this workflow replaces manual writing with a structured AI prompt that adapts to platform requirements and audience, making it directly sellable as a service on platforms like Upwork or Fiverr.
+Built to demonstrate AI-powered content generation for the German freelance and solopreneur market. 
 
